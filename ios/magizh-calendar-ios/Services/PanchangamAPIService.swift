@@ -28,22 +28,22 @@ enum APIError: Error, LocalizedError, Sendable {
 }
 
 /// Configuration constants for the API service
-private enum ServiceConfig {
+private enum ServiceConfig: Sendable {
     #if DEBUG
-    static let baseURL = "http://localhost:8080"
-    static let timeout: TimeInterval = 30
+    static nonisolated let baseURL = "http://localhost:8080"
+    static nonisolated let timeout: TimeInterval = 30
     #else
-    static let baseURL = "https://api.magizh.com"
-    static let timeout: TimeInterval = 15
+    static nonisolated let baseURL = "https://api.magizh.com"
+    static nonisolated let timeout: TimeInterval = 15
     #endif
 
-    static let dailyEndpoint = "/api/panchangam/daily"
-    static let weeklyEndpoint = "/api/panchangam/weekly"
-    static let healthEndpoint = "/api/panchangam/health"
+    static nonisolated let dailyEndpoint = "/api/panchangam/daily"
+    static nonisolated let weeklyEndpoint = "/api/panchangam/weekly"
+    static nonisolated let healthEndpoint = "/api/panchangam/health"
 
-    static let defaultLatitude = 13.0827
-    static let defaultLongitude = 80.2707
-    static let defaultTimezone = "Asia/Kolkata"
+    static nonisolated let defaultLatitude = 13.0827
+    static nonisolated let defaultLongitude = 80.2707
+    static nonisolated let defaultTimezone = "Asia/Kolkata"
 }
 
 /// Service for making Panchangam API calls

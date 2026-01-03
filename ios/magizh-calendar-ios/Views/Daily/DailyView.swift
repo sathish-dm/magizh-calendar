@@ -7,7 +7,9 @@ struct DailyView: View {
     // MARK: - Properties
 
     @StateObject private var viewModel = DailyViewModel()
+    @Environment(\.colorScheme) private var colorScheme
     @State private var isFloating = false
+    @State private var showingSettings = false
 
     // MARK: - Body
 
@@ -36,16 +38,18 @@ struct DailyView: View {
                 isFloating = true
             }
         }
+        .sheet(isPresented: $showingSettings) {
+            SettingsView()
+        }
     }
 
     // MARK: - Background
 
     private var backgroundGradient: some View {
         LinearGradient(
-            colors: [
-                Color(.systemBackground),
-                Color(.systemGray6)
-            ],
+            colors: colorScheme == .dark
+                ? [Color(white: 0.1), Color(white: 0.05)]
+                : [Color(white: 0.98), Color(white: 0.94)],
             startPoint: .top,
             endPoint: .bottom
         )
@@ -56,8 +60,8 @@ struct DailyView: View {
 
     private var headerSection: some View {
         VStack(spacing: Spacing.lg) {
-            // Location badge
-            locationBadge
+            // Top bar with location and settings
+            headerTopBar
 
             // Main date display
             dateDisplay
@@ -70,15 +74,35 @@ struct DailyView: View {
         .background(headerBackground)
     }
 
-    private var locationBadge: some View {
-        HStack(spacing: Spacing.md) {
-            HStack(spacing: Spacing.xs) {
-                Image(systemName: "location.fill")
-                    .font(.caption2)
-                Text(viewModel.currentLocation.shortDisplayName)
-                    .font(.caption)
-                    .fontWeight(.medium)
+    private var headerTopBar: some View {
+        HStack {
+            // Location badge
+            locationBadge
+
+            Spacer()
+
+            // Settings button
+            Button {
+                showingSettings = true
+            } label: {
+                Image(systemName: "gearshape.fill")
+                    .font(.body)
+                    .foregroundStyle(.white.opacity(0.9))
+                    .frame(width: 36, height: 36)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Circle())
+                    .environment(\.colorScheme, .dark)
             }
+        }
+    }
+
+    private var locationBadge: some View {
+        HStack(spacing: Spacing.xs) {
+            Image(systemName: "location.fill")
+                .font(.caption2)
+            Text(viewModel.currentLocation.shortDisplayName)
+                .font(.caption)
+                .fontWeight(.medium)
 
             DataSourceBadge(isUsingMockData: viewModel.isUsingMockData)
         }

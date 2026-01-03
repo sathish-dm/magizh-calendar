@@ -20,8 +20,8 @@ class DailyViewModel: ObservableObject {
     /// Currently selected date
     @Published var selectedDate: Date = Date()
 
-    /// Current user location
-    @Published var currentLocation: Location = .chennai
+    /// Current user location (loaded from settings)
+    @Published var currentLocation: Location
 
     /// Whether using fallback mock data (API unavailable)
     @Published private(set) var isUsingMockData = false
@@ -85,6 +85,9 @@ class DailyViewModel: ObservableObject {
     // MARK: - Initialization
 
     init() {
+        // Load default location from settings
+        self.currentLocation = SettingsService.shared.defaultLocation
+
         // Load data when date or location changes
         setupBindings()
 
@@ -158,9 +161,10 @@ class DailyViewModel: ObservableObject {
         selectedDate = date
     }
 
-    /// Update the current location
+    /// Update the current location and save to settings
     func updateLocation(_ location: Location) {
         currentLocation = location
+        SettingsService.shared.defaultLocation = location
     }
 
     /// Retry loading after an error

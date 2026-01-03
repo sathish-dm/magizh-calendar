@@ -50,6 +50,9 @@ struct Location: Codable, Identifiable, Equatable, Hashable {
         return city
     }
 
+    /// Display name for UI (alias for name)
+    var displayName: String { name }
+
     /// CoreLocation coordinate
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -73,8 +76,8 @@ struct Location: Codable, Identifiable, Equatable, Hashable {
 // MARK: - Popular Cities
 
 extension Location {
-    /// Pre-configured popular cities for quick selection
-    static let popularCities: [Location] = [
+    /// Pre-configured popular locations for quick selection
+    static let popularLocations: [Location] = [
         .chennai,
         .coimbatore,
         .madurai,

@@ -35,12 +35,68 @@ magizh-calendar-ios/
 # Build
 xcodebuild -scheme magizh-calendar-ios -sdk iphonesimulator build
 
+# Run tests
+xcodebuild test -project magizh-calendar-ios.xcodeproj -scheme magizh-calendar-iosTests -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2'
+
 # Run on simulator
 xcrun simctl launch booted com.sats.magizh-calendar-ios
 
 # Dark/Light mode
 xcrun simctl ui booted appearance dark
 xcrun simctl ui booted appearance light
+```
+
+## Development Workflow (IMPORTANT)
+
+**For every major change, follow this workflow:**
+
+1. **Write/Update Unit Tests** - Add tests for new functionality in `Tests/UnitTests/`
+2. **Run All Tests** - Ensure all tests pass before committing
+3. **Build the App** - Verify the app compiles without errors
+4. **Commit and Push** - Commit changes with a descriptive message
+
+```bash
+# Step 1: Run tests
+xcodebuild test -project magizh-calendar-ios.xcodeproj -scheme magizh-calendar-iosTests -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2'
+
+# Step 2: Build app
+xcodebuild -scheme magizh-calendar-ios -sdk iphonesimulator build
+
+# Step 3: Commit and push (if tests pass)
+git add .
+git commit -m "feat: description of changes"
+git push
+```
+
+## Test Structure
+
+```
+Tests/UnitTests/
+├── LocationTests.swift        # Location model tests
+├── TimeRangeTests.swift       # Time range tests
+├── FoodStatusTests.swift      # Food status tests
+├── SettingsServiceTests.swift # Settings persistence tests
+├── DailyViewModelTests.swift  # ViewModel tests
+└── PanchangamDataTests.swift  # Panchangam model tests
+```
+
+### Writing Tests
+```swift
+import XCTest
+@testable import magizh_calendar_ios
+
+final class FeatureTests: XCTestCase {
+    func testFeatureBehavior() {
+        // Arrange
+        let sut = Feature()
+
+        // Act
+        let result = sut.doSomething()
+
+        // Assert
+        XCTAssertEqual(result, expectedValue)
+    }
+}
 ```
 
 ## iOS 18 Liquid Glass Design

@@ -42,9 +42,67 @@ make swagger      # Open Swagger UI
 make docker-run   # Run in Docker
 
 # Using Maven
-./mvnw spring-boot:run
-./mvnw clean compile
-./mvnw clean package
+mvn spring-boot:run
+mvn clean compile
+mvn clean package
+```
+
+## Development Workflow (IMPORTANT)
+
+**For every major change, follow this workflow:**
+
+1. **Write/Update Unit Tests** - Add tests for new functionality in `src/test/java/`
+2. **Run All Tests** - Ensure all tests pass before committing
+3. **Build the App** - Verify the app compiles without errors
+4. **Commit and Push** - Commit changes with a descriptive message
+
+```bash
+# Step 1: Run tests
+make test
+# or: mvn test
+
+# Step 2: Build app
+make build
+# or: mvn clean compile
+
+# Step 3: Commit and push (if tests pass)
+git add .
+git commit -m "feat: description of changes"
+git push
+```
+
+## Test Structure
+
+```
+src/test/java/com/magizh/calendar/
+├── controller/
+│   └── PanchangamControllerTest.java
+├── service/
+│   └── PanchangamServiceTest.java
+└── model/
+    └── *Test.java
+```
+
+### Writing Tests
+```java
+@SpringBootTest
+class PanchangamServiceTest {
+
+    @Autowired
+    private PanchangamService service;
+
+    @Test
+    void shouldCalculateNakshatram() {
+        // Arrange
+        LocalDate date = LocalDate.of(2025, 1, 15);
+
+        // Act
+        var result = service.getDailyPanchangam(date, 13.0827, 80.2707, "Asia/Kolkata");
+
+        // Assert
+        assertThat(result.nakshatram()).isNotNull();
+    }
+}
 ```
 
 ## API Endpoints

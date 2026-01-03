@@ -10,9 +10,20 @@
 		B8AEFB032F08A3CF00763059 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = B8AEFB022F08A3CA00763059 /* readme.md */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		C1TEST0012F08B00000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B88BF3C02F08A06F0024DA83 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B88BF3C72F08A06F0024DA83;
+			remoteInfo = "magizh-calendar-ios";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		B88BF3C82F08A06F0024DA83 /* magizh-calendar-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "magizh-calendar-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8AEFB022F08A3CA00763059 /* readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
+		C1TEST0022F08B00000000002 /* magizh-calendar-iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "magizh-calendar-iosTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -21,10 +32,22 @@
 			path = "magizh-calendar-ios";
 			sourceTree = "<group>";
 		};
+		C1TEST0032F08B00000000003 /* UnitTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Tests/UnitTests";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		B88BF3C52F08A06F0024DA83 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1TEST0042F08B00000000004 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -38,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				B88BF3CA2F08A06F0024DA83 /* magizh-calendar-ios */,
+				C1TEST0032F08B00000000003 /* UnitTests */,
 				B88BF3C92F08A06F0024DA83 /* Products */,
 				B8AEFB022F08A3CA00763059 /* readme.md */,
 			);
@@ -47,6 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				B88BF3C82F08A06F0024DA83 /* magizh-calendar-ios.app */,
+				C1TEST0022F08B00000000002 /* magizh-calendar-iosTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -76,6 +101,29 @@
 			productReference = B88BF3C82F08A06F0024DA83 /* magizh-calendar-ios.app */;
 			productType = "com.apple.product-type.application";
 		};
+		C1TEST0052F08B00000000005 /* magizh-calendar-iosTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1TEST0062F08B00000000006 /* Build configuration list for PBXNativeTarget "magizh-calendar-iosTests" */;
+			buildPhases = (
+				C1TEST0072F08B00000000007 /* Sources */,
+				C1TEST0042F08B00000000004 /* Frameworks */,
+				C1TEST0082F08B00000000008 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C1TEST0092F08B00000000009 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C1TEST0032F08B00000000003 /* UnitTests */,
+			);
+			name = "magizh-calendar-iosTests";
+			packageProductDependencies = (
+			);
+			productName = "magizh-calendar-iosTests";
+			productReference = C1TEST0022F08B00000000002 /* magizh-calendar-iosTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -88,6 +136,10 @@
 				TargetAttributes = {
 					B88BF3C72F08A06F0024DA83 = {
 						CreatedOnToolsVersion = 26.2;
+					};
+					C1TEST0052F08B00000000005 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = B88BF3C72F08A06F0024DA83;
 					};
 				};
 			};
@@ -106,6 +158,7 @@
 			projectRoot = "";
 			targets = (
 				B88BF3C72F08A06F0024DA83 /* magizh-calendar-ios */,
+				C1TEST0052F08B00000000005 /* magizh-calendar-iosTests */,
 			);
 		};
 /* End PBXProject section */
@@ -119,6 +172,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C1TEST0082F08B00000000008 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -129,7 +189,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C1TEST0072F08B00000000007 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C1TEST0092F08B00000000009 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B88BF3C72F08A06F0024DA83 /* magizh-calendar-ios */;
+			targetProxy = C1TEST0012F08B00000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		B88BF3D12F08A0700024DA83 /* Debug */ = {
@@ -330,6 +405,59 @@
 			};
 			name = Release;
 		};
+		C1TEST00A2F08B0000000000A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.sats.magizh-calendar-iosTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/magizh-calendar-ios.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/magizh-calendar-ios";
+			};
+			name = Debug;
+		};
+		C1TEST00B2F08B0000000000B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.sats.magizh-calendar-iosTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/magizh-calendar-ios.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/magizh-calendar-ios";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -347,6 +475,15 @@
 			buildConfigurations = (
 				B88BF3D42F08A0700024DA83 /* Debug */,
 				B88BF3D52F08A0700024DA83 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C1TEST0062F08B00000000006 /* Build configuration list for PBXNativeTarget "magizh-calendar-iosTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1TEST00A2F08B0000000000A /* Debug */,
+				C1TEST00B2F08B0000000000B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

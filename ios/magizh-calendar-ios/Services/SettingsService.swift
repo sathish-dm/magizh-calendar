@@ -20,6 +20,7 @@ final class SettingsService: ObservableObject {
         static let notificationsEnabled = "notificationsEnabled"
         static let favoriteLocations = "favoriteLocations"
         static let lastViewedDate = "lastViewedDate"
+        static let isVegetarian = "isVegetarian"
     }
 
     // MARK: - Published Properties
@@ -38,6 +39,11 @@ final class SettingsService: ObservableObject {
 
     @Published var notificationsEnabled: Bool {
         didSet { UserDefaults.standard.set(notificationsEnabled, forKey: Keys.notificationsEnabled) }
+    }
+
+    /// When true, hides non-veg related food alerts (user is vegetarian)
+    @Published var isVegetarian: Bool {
+        didSet { UserDefaults.standard.set(isVegetarian, forKey: Keys.isVegetarian) }
     }
 
     @Published var defaultLocation: Location {
@@ -90,6 +96,9 @@ final class SettingsService: ObservableObject {
 
         // Load notifications enabled
         self.notificationsEnabled = UserDefaults.standard.bool(forKey: Keys.notificationsEnabled)
+
+        // Load vegetarian preference
+        self.isVegetarian = UserDefaults.standard.bool(forKey: Keys.isVegetarian)
 
         // Load default location
         if let data = UserDefaults.standard.data(forKey: Keys.defaultLocation),
@@ -165,6 +174,7 @@ final class SettingsService: ObservableObject {
         dateFormat = .full
         theme = .system
         notificationsEnabled = false
+        isVegetarian = false
         favoriteLocations = []
     }
 }

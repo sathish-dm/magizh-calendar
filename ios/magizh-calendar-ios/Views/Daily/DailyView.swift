@@ -7,6 +7,7 @@ struct DailyView: View {
     // MARK: - Properties
 
     @StateObject private var viewModel = DailyViewModel()
+    @ObservedObject private var settings = SettingsService.shared
     @Environment(\.colorScheme) private var colorScheme
     @State private var isFloating = false
     @State private var showingSettings = false
@@ -103,8 +104,6 @@ struct DailyView: View {
             Text(viewModel.currentLocation.shortDisplayName)
                 .font(.caption)
                 .fontWeight(.medium)
-
-            DataSourceBadge(isUsingMockData: viewModel.isUsingMockData)
         }
         .foregroundStyle(.white.opacity(0.9))
         .padding(.horizontal, Spacing.md)
@@ -172,29 +171,62 @@ struct DailyView: View {
 
     // MARK: - Food Status Card
 
+    /// Returns the effective food status considering vegetarian preference
+    /// For vegetarians, "Avoid Non-Veg" becomes a regular day since they don't eat non-veg anyway
+    private func effectiveFoodStatus(for data: PanchangamData) -> (type: FoodStatusType, isVegModified: Bool) {
+        if settings.isVegetarian && data.foodStatus.type == .avoidNonVeg {
+            return (.regular, true)
+        }
+        return (data.foodStatus.type, false)
+    }
+
     private func foodStatusCard(data: PanchangamData) -> some View {
-        GlassCard(glowColor: data.foodStatus.color) {
+        let (effectiveType, isVegModified) = effectiveFoodStatus(for: data)
+        let displayColor = effectiveType == .regular ? Color.green : data.foodStatus.color
+
+        return GlassCard(glowColor: displayColor) {
             HStack(alignment: .top, spacing: Spacing.lg) {
                 // Icon
-                foodStatusIcon(data: data)
+                foodStatusIcon(type: effectiveType, color: displayColor)
 
                 // Content
                 VStack(alignment: .leading, spacing: Spacing.xs) {
-                    Text(data.foodStatus.type == .regular ? "Regular Day" : data.foodStatus.shortMessage)
+                    Text(effectiveType == .regular ? "Regular Day" : data.foodStatus.shortMessage)
                         .font(.headline)
                         .fontWeight(.semibold)
 
-                    Text(data.foodStatus.type == .regular
-                         ? "Safe to cook non-veg"
-                         : data.foodStatus.type.defaultReason)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-
-                    if let next = data.nextAuspiciousDay {
-                        nextAuspiciousBadge(day: next)
+                    // Subtitle based on vegetarian status
+                    if settings.isVegetarian {
+                        if isVegModified {
+                            // Was "Avoid Non-Veg" but user is vegetarian
+                            Text("No dietary concerns")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        } else if effectiveType == .regular {
+                            Text("No special observances today")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        } else if effectiveType == .strictFast {
+                            Text(data.foodStatus.type.defaultReason)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        // Non-vegetarian user - show full messages
+                        Text(effectiveType == .regular
+                             ? "Safe to cook non-veg"
+                             : data.foodStatus.type.defaultReason)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                     }
 
-                    if data.foodStatus.type != .regular {
+                    // Next auspicious day badge (show for all users)
+                    if let next = data.nextAuspiciousDay {
+                        nextAuspiciousBadge(day: next, isVegetarian: settings.isVegetarian)
+                    }
+
+                    // Storage warning (only for non-vegetarians with non-regular status)
+                    if !settings.isVegetarian && data.foodStatus.type != .regular {
                         Text("Avoid storing overnight")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -207,31 +239,55 @@ struct DailyView: View {
         }
     }
 
-    private func foodStatusIcon(data: PanchangamData) -> some View {
-        Image(systemName: data.foodStatus.iconName)
+    private func foodStatusIcon(type: FoodStatusType, color: Color) -> some View {
+        let iconName = type == .regular ? "checkmark.circle.fill" : type.iconName
+
+        return Image(systemName: iconName)
             .font(.title2)
-            .foregroundStyle(data.foodStatus.color)
+            .foregroundStyle(color)
             .frame(width: 48, height: 48)
             .background(
                 RoundedRectangle(cornerRadius: CornerRadius.lg, style: .continuous)
-                    .fill(data.foodStatus.color.opacity(0.15))
+                    .fill(color.opacity(0.15))
             )
     }
 
-    private func nextAuspiciousBadge(day: AuspiciousDay) -> some View {
-        HStack(spacing: Spacing.xs) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.caption2)
-            Text("\(day.name) (\(day.daysUntilFormatted))")
-                .font(.caption)
-                .fontWeight(.medium)
+    private func nextAuspiciousBadge(day: AuspiciousDay, isVegetarian: Bool) -> some View {
+        // For vegetarians, only show fasting-related upcoming days, not "avoid non-veg" warnings
+        let showWarning = !isVegetarian || day.type.foodRestriction == .strictFast
+
+        return Group {
+            if showWarning {
+                HStack(spacing: Spacing.xs) {
+                    Image(systemName: day.type.foodRestriction == .strictFast ? "moon.stars.fill" : "exclamationmark.triangle.fill")
+                        .font(.caption2)
+                    Text("\(day.name) (\(day.daysUntilFormatted))")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                }
+                .foregroundStyle(day.type.foodRestriction == .strictFast ? .purple : .orange)
+                .padding(.horizontal, Spacing.md)
+                .padding(.vertical, Spacing.sm)
+                .background((day.type.foodRestriction == .strictFast ? Color.purple : Color.orange).opacity(0.15))
+                .clipShape(Capsule())
+                .padding(.top, Spacing.xs)
+            } else {
+                // For vegetarians when next day is just "avoid non-veg", show as upcoming observance info
+                HStack(spacing: Spacing.xs) {
+                    Image(systemName: "calendar")
+                        .font(.caption2)
+                    Text("Upcoming: \(day.name) (\(day.daysUntilFormatted))")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                }
+                .foregroundStyle(.blue)
+                .padding(.horizontal, Spacing.md)
+                .padding(.vertical, Spacing.sm)
+                .background(Color.blue.opacity(0.15))
+                .clipShape(Capsule())
+                .padding(.top, Spacing.xs)
+            }
         }
-        .foregroundStyle(.orange)
-        .padding(.horizontal, Spacing.md)
-        .padding(.vertical, Spacing.sm)
-        .background(Color.orange.opacity(0.15))
-        .clipShape(Capsule())
-        .padding(.top, Spacing.xs)
     }
 
     // MARK: - Panchangam Section

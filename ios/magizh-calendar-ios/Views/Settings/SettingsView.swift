@@ -10,6 +10,7 @@ struct SettingsView: View {
             Form {
                 locationSection
                 displaySection
+                foodPreferencesSection
                 notificationsSection
                 aboutSection
             }
@@ -82,6 +83,28 @@ struct SettingsView: View {
             }
         } header: {
             Text("Display")
+        }
+    }
+
+    // MARK: - Food Preferences Section
+
+    private var foodPreferencesSection: some View {
+        Section {
+            Toggle("I am Vegetarian", isOn: $settings.isVegetarian)
+
+            if settings.isVegetarian {
+                HStack {
+                    Image(systemName: "leaf.fill")
+                        .foregroundStyle(.green)
+                    Text("Non-veg alerts hidden")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } header: {
+            Text("Food Preferences")
+        } footer: {
+            Text("When enabled, alerts about avoiding non-veg food will be hidden since they don't apply to you.")
         }
     }
 

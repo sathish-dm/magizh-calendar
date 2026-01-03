@@ -38,13 +38,12 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- Swiss Ephemeris for astronomical calculations (TODO: add when integrating real calculations)
+        <!-- Swiss Ephemeris for astronomical calculations -->
         <dependency>
-            <groupId>com.github.jankuca</groupId>
+            <groupId>com.github.krishnact</groupId>
             <artifactId>swisseph</artifactId>
-            <version>2.10.03</version>
+            <version>master-SNAPSHOT</version>
         </dependency>
-        -->
 
         <!-- Lombok for reducing boilerplate (optional, using Records mostly) -->
         <dependency>
@@ -76,14 +75,13 @@
         </dependency>
     </dependencies>
 
-    <!-- JitPack repository (uncomment when adding Swiss Ephemeris)
+    <!-- JitPack repository for Swiss Ephemeris -->
     <repositories>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
-    -->
 
     <build>
         <plugins>

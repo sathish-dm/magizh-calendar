@@ -10,20 +10,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service for calculating Panchangam data.
- * Currently returns mock data; Swiss Ephemeris integration planned.
+ * Service for calculating Panchangam data using Swiss Ephemeris.
+ * Provides accurate astronomical calculations for Tamil calendar.
  */
 @Service
 public class PanchangamService {
 
+    private final AstronomyService astronomyService;
+    private final NakshatramCalculator nakshatramCalculator;
+    private final ThithiCalculator thithiCalculator;
+    private final YogamCalculator yogamCalculator;
+    private final KaranamCalculator karanamCalculator;
+    private final TimingsCalculator timingsCalculator;
+    private final TamilCalendarService tamilCalendarService;
+
+    public PanchangamService(
+            AstronomyService astronomyService,
+            NakshatramCalculator nakshatramCalculator,
+            ThithiCalculator thithiCalculator,
+            YogamCalculator yogamCalculator,
+            KaranamCalculator karanamCalculator,
+            TimingsCalculator timingsCalculator,
+            TamilCalendarService tamilCalendarService
+    ) {
+        this.astronomyService = astronomyService;
+        this.nakshatramCalculator = nakshatramCalculator;
+        this.thithiCalculator = thithiCalculator;
+        this.yogamCalculator = yogamCalculator;
+        this.karanamCalculator = karanamCalculator;
+        this.timingsCalculator = timingsCalculator;
+        this.tamilCalendarService = tamilCalendarService;
+    }
+
     /**
-     * Get Panchangam data for a specific date and location
+     * Get Panchangam data for a specific date and location.
      *
      * @param date     The date to get panchangam for
      * @param lat      Latitude of the location
      * @param lng      Longitude of the location
      * @param timezone Timezone string (e.g., "Asia/Kolkata")
-     * @return PanchangamResponse with all five angams
+     * @return PanchangamResponse with all five angams and timings
      */
     public PanchangamResponse getDailyPanchangam(
             LocalDate date,
@@ -31,14 +57,41 @@ public class PanchangamService {
             double lng,
             String timezone
     ) {
-        var zoneId = ZoneId.of(timezone);
-        var baseTime = date.atStartOfDay(zoneId);
+        ZoneId zoneId = ZoneId.of(timezone);
 
-        return generateMockPanchangam(date, baseTime);
+        // Calculate sunrise and sunset for the location
+        ZonedDateTime sunrise = astronomyService.calculateSunrise(date, lat, lng, zoneId);
+        ZonedDateTime sunset = astronomyService.calculateSunset(date, lat, lng, zoneId);
+
+        // Calculate Tamil date using Sun's position at sunrise
+        TamilDate tamilDate = tamilCalendarService.calculate(date, sunrise);
+
+        // Calculate the five angams at sunrise
+        Nakshatram nakshatram = nakshatramCalculator.calculate(sunrise);
+        Thithi thithi = thithiCalculator.calculate(sunrise);
+        Yogam yogam = yogamCalculator.calculate(sunrise);
+        Karanam karanam = karanamCalculator.calculate(sunrise);
+
+        // Calculate timings based on sunrise/sunset
+        Timings timings = timingsCalculator.calculate(sunrise, sunset, date.getDayOfWeek());
+
+        // Determine food status based on thithi
+        FoodStatus foodStatus = determineFoodStatus(thithi);
+
+        return new PanchangamResponse(
+            date,
+            tamilDate,
+            nakshatram,
+            thithi,
+            yogam,
+            karanam,
+            timings,
+            foodStatus
+        );
     }
 
     /**
-     * Get Panchangam data for a week starting from the given date
+     * Get Panchangam data for a week starting from the given date.
      *
      * @param startDate Start date of the week
      * @param lat       Latitude of the location
@@ -55,7 +108,7 @@ public class PanchangamService {
         List<PanchangamResponse> weekData = new ArrayList<>();
 
         for (int i = 0; i < 7; i++) {
-            var date = startDate.plusDays(i);
+            LocalDate date = startDate.plusDays(i);
             weekData.add(getDailyPanchangam(date, lat, lng, timezone));
         }
 
@@ -63,85 +116,23 @@ public class PanchangamService {
     }
 
     /**
-     * Generate mock Panchangam data for development
-     * Will be replaced with Swiss Ephemeris calculations
+     * Determine food status based on the thithi.
+     * Special thithis like Ekadasi and Amavasya have dietary recommendations.
      */
-    private PanchangamResponse generateMockPanchangam(LocalDate date, ZonedDateTime baseTime) {
-        // Tamil date (simplified mock)
-        var tamilDate = new TamilDate(
-            getTamilMonth(date),
-            getTamilDay(date),
-            "Krodhana",
-            getTamilWeekday(date)
-        );
-
-        // Five angams
-        var nakshatram = Nakshatram.sample(baseTime);
-        var thithi = Thithi.sample(baseTime);
-        var yogam = Yogam.sampleAuspicious(baseTime);
-        var karanam = Karanam.sample(baseTime);
-
-        // Timings
-        var timings = Timings.sample(baseTime);
-
-        // Food status based on thithi
-        var foodStatus = determineFoodStatus(thithi);
-
-        return new PanchangamResponse(
-            date,
-            tamilDate,
-            nakshatram,
-            thithi,
-            yogam,
-            karanam,
-            timings,
-            foodStatus
-        );
-    }
-
-    private String getTamilMonth(LocalDate date) {
-        // Simplified: map Gregorian months to Tamil months (approximate)
-        return switch (date.getMonthValue()) {
-            case 1 -> "Thai";
-            case 2 -> "Maasi";
-            case 3 -> "Panguni";
-            case 4 -> "Chithirai";
-            case 5 -> "Vaikasi";
-            case 6 -> "Aani";
-            case 7 -> "Aadi";
-            case 8 -> "Aavani";
-            case 9 -> "Purattasi";
-            case 10 -> "Aippasi";
-            case 11 -> "Karthigai";
-            case 12 -> "Margazhi";
-            default -> "Unknown";
-        };
-    }
-
-    private int getTamilDay(LocalDate date) {
-        // Simplified: offset from Gregorian day
-        return ((date.getDayOfMonth() + 16) % 30) + 1;
-    }
-
-    private String getTamilWeekday(LocalDate date) {
-        return switch (date.getDayOfWeek()) {
-            case SUNDAY -> "Nyairu";
-            case MONDAY -> "Thingal";
-            case TUESDAY -> "Sevvai";
-            case WEDNESDAY -> "Budhan";
-            case THURSDAY -> "Viyazhan";
-            case FRIDAY -> "Velli";
-            case SATURDAY -> "Sani";
-        };
-    }
-
     private FoodStatus determineFoodStatus(Thithi thithi) {
-        // Check for special thithis
-        if (thithi.name().contains("Ekadasi")) {
+        String name = thithi.name();
+
+        if (name.contains("Ekadasi")) {
             return FoodStatus.fasting();
-        } else if (thithi.name().equals("Amavasya")) {
+        } else if (name.equals("Amavasya")) {
             return FoodStatus.avoidNonVeg();
+        } else if (name.equals("Pournami")) {
+            return FoodStatus.avoidNonVeg();
+        } else if (name.contains("Ashtami")) {
+            // Some traditions avoid non-veg on Ashtami
+            return FoodStatus.regular();
         }
+
         return FoodStatus.regular();
     }
 }

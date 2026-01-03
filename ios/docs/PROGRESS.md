@@ -159,6 +159,58 @@
 
 ---
 
+## Session 4 - January 4, 2026
+
+### Completed
+
+#### 1. Swiss Ephemeris Integration (Backend)
+- [x] Enabled Swiss Ephemeris dependency (`com.github.krishnact:swisseph`) via JitPack
+- [x] Created `AstronomyService.java` - Core astronomical calculations
+  - Sun/Moon ecliptic longitude calculations
+  - Sunrise/sunset calculations using Moshier mode
+  - Binary search for finding celestial events (end times)
+  - No external data files required (Moshier algorithms built-in)
+
+#### 2. Panchangam Calculator Services
+- [x] Created `NakshatramCalculator.java`
+  - 27 nakshatrams based on Moon's ecliptic longitude
+  - Each nakshatram spans 13°20' (13.333°)
+  - Includes lord/ruling planet for each nakshatram
+- [x] Created `ThithiCalculator.java`
+  - 30 thithis based on Moon-Sun angular difference
+  - Each thithi = 12° of Moon-Sun angle
+  - Shukla (waxing) and Krishna (waning) paksha support
+- [x] Created `YogamCalculator.java`
+  - 27 yogams based on Sun + Moon longitude sum
+  - Auspicious/Inauspicious/Neutral type classification
+- [x] Created `KaranamCalculator.java`
+  - 60 karanams (half-thithi, 6° segments)
+  - 7 recurring + 4 fixed karanams
+
+#### 3. Timing and Calendar Services
+- [x] Created `TimingsCalculator.java`
+  - Rahukaalam based on weekday (8 segments of day)
+  - Yamagandam and Kuligai calculations
+  - Nalla Neram (auspicious periods)
+- [x] Created `TamilCalendarService.java`
+  - Tamil month from Sun's zodiac position
+  - 60-year cycle year names
+  - Tamil weekday names
+
+#### 4. PanchangamService Update
+- [x] Replaced mock data generation with real astronomical calculations
+- [x] All five angams now calculated from Swiss Ephemeris
+- [x] Location-aware sunrise/sunset for accurate timings
+
+#### 5. Verification
+- [x] API returns real calculated data:
+  - Nakshatram: Ashlesha (Mercury lord)
+  - Thithi: Krishna Prathamai
+  - Yogam: Ayushman (Auspicious)
+  - Sunrise: 6:32 AM, Sunset: 5:55 PM (Chennai)
+
+---
+
 ## Next Steps (Planned)
 
 ### Phase 1 - Core Features
@@ -169,6 +221,7 @@
 
 ### Phase 2 - API Integration
 - [x] Replace mock data with real Panchangam API ✅ Session 2
+- [x] Swiss Ephemeris integration for real astronomical calculations ✅ Session 4
 - [ ] Implement caching strategy
 - [ ] Offline support
 

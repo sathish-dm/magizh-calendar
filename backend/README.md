@@ -9,57 +9,134 @@ Tamil Panchangam Calendar API built with Spring Boot 3.3 and Java 21.
 - Auspicious/inauspicious timings (Nalla Neram, Rahukaalam, Yamagandam)
 - Food status guidance
 - Location-aware calculations
+- OpenAPI/Swagger documentation
+- RFC 7807 Problem Details for errors
+- Docker support
 
 ## Tech Stack
 
-- Java 21 (LTS)
-- Spring Boot 3.3
-- Virtual Threads enabled
-- Swiss Ephemeris (planned)
+| Component | Technology |
+|-----------|------------|
+| Language | Java 21 (LTS) |
+| Framework | Spring Boot 3.3.7 |
+| Build | Maven |
+| Concurrency | Virtual Threads |
+| DTOs | Java Records |
+| Docs | SpringDoc OpenAPI 2.3 |
+
+## Quick Start
+
+### Using Make (Recommended)
+
+```bash
+make run       # Start server
+make build     # Compile project
+make test      # Run tests
+make swagger   # Open Swagger UI
+make health    # Check health endpoint
+make daily     # Test daily endpoint
+```
+
+### Using Maven
+
+```bash
+./mvnw spring-boot:run
+```
+
+### Using Docker
+
+```bash
+# Build and run
+make docker-build
+make docker-run
+
+# Or using docker-compose
+docker-compose up -d
+```
+
+## API Documentation
+
+Swagger UI: http://localhost:8080/swagger-ui/index.html
 
 ## API Endpoints
 
-### Get Daily Panchangam
-```
-GET /api/panchangam/daily?date=2026-01-03&lat=13.0827&lng=80.2707&timezone=Asia/Kolkata
-```
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/panchangam/daily` | Daily panchangam data |
+| `GET /api/panchangam/weekly` | Weekly panchangam data |
+| `GET /api/panchangam/health` | Health check |
 
-### Get Weekly Panchangam
-```
-GET /api/panchangam/weekly?startDate=2026-01-03&lat=13.0827&lng=80.2707&timezone=Asia/Kolkata
-```
+### Parameters
 
-### Health Check
-```
-GET /api/panchangam/health
-```
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `date` | LocalDate | No | Today | Date (YYYY-MM-DD) |
+| `lat` | double | No | 13.0827 | Latitude |
+| `lng` | double | No | 80.2707 | Longitude |
+| `timezone` | String | No | Asia/Kolkata | Timezone ID |
 
-## Running Locally
+### Example Requests
 
 ```bash
-# Build
-./mvnw clean package
+# Daily panchangam for Chennai
+curl "http://localhost:8080/api/panchangam/daily?date=2026-01-03&lat=13.0827&lng=80.2707&timezone=Asia/Kolkata"
 
-# Run
-./mvnw spring-boot:run
+# Weekly panchangam
+curl "http://localhost:8080/api/panchangam/weekly?startDate=2026-01-03"
 
-# Or run the JAR
-java -jar target/magizh-calendar-api-0.0.1-SNAPSHOT.jar
+# Health check
+curl "http://localhost:8080/api/panchangam/health"
 ```
 
-The API will be available at `http://localhost:8080`
+## Project Structure
+
+```
+backend/
+├── src/main/java/com/magizh/calendar/
+│   ├── MagizhCalendarApiApplication.java
+│   ├── config/
+│   │   ├── GlobalExceptionHandler.java  # RFC 7807 errors
+│   │   ├── OpenApiConfig.java           # Swagger config
+│   │   └── RequestLoggingConfig.java    # Request logging
+│   ├── controller/
+│   │   └── PanchangamController.java
+│   ├── model/
+│   │   ├── PanchangamResponse.java      # Main response
+│   │   ├── TamilDate.java
+│   │   ├── Nakshatram.java
+│   │   ├── Thithi.java
+│   │   ├── Yogam.java
+│   │   └── ...
+│   └── service/
+│       └── PanchangamService.java
+├── src/main/resources/
+│   └── application.yml
+├── Dockerfile
+├── docker-compose.yml
+├── Makefile
+└── pom.xml
+```
 
 ## Configuration
 
-Default configuration in `application.yml`:
-- Port: 8080
-- Virtual threads: enabled
-- CORS: enabled for all origins
+Default settings in `application.yml`:
+
+```yaml
+server:
+  port: 8080
+
+spring:
+  threads:
+    virtual:
+      enabled: true  # Java 21 Virtual Threads
+
+logging:
+  level:
+    com.magizh: DEBUG
+```
 
 ## Development
 
 This API currently returns mock data. Swiss Ephemeris integration is planned for accurate astronomical calculations.
 
-## License
-
-Private - Magizh Calendar Project
+Part of the [Magizh Calendar](https://github.com/sathish-dm/magizh-calendar) monorepo.

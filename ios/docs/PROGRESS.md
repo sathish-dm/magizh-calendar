@@ -59,6 +59,44 @@
 
 ---
 
+## Session 2 - January 3, 2026
+
+### Completed
+
+#### 1. API Integration
+- [x] Created `Services/APIConfig.swift` - API endpoints and defaults
+- [x] Created `Services/APIResponse.swift` - Response models matching backend JSON
+- [x] Created `Services/PanchangamAPIService.swift` - Actor-based async API client
+- [x] Updated `DailyViewModel.swift` to fetch from API with mock fallback
+- [x] Added `isUsingMockData` flag for data source tracking
+
+#### 2. Swift 6 Concurrency
+- [x] Added `Sendable` conformance to API response models
+- [x] Added `@MainActor` to domain model conversion methods
+- [x] Fixed main actor isolation issues with nonisolated properties
+
+#### 3. Environment Configuration
+- [x] Created `Services/Environment.swift` with dev/staging/production configs
+- [x] Environment-based API URLs:
+  - Development: `http://localhost:8080`
+  - Staging: `https://staging-api.magizh.com`
+  - Production: `https://api.magizh.com`
+- [x] Configurable timeouts per environment
+
+#### 4. Mock Data Indicator
+- [x] Created `Views/Components/DataSourceBadge.swift`
+- [x] Shows green "Live API" or orange "Mock Data" badge
+- [x] Only visible in DEBUG builds
+- [x] Integrated into DailyView header
+
+#### 5. Monorepo Migration
+- [x] Migrated from standalone repo to monorepo
+- [x] New location: `magizh-calendar/ios/`
+- [x] Old repo `magizh-calendar-ios` archived
+- [x] Startup scripts updated for new paths
+
+---
+
 ## Next Steps (Planned)
 
 ### Phase 1 - Core Features
@@ -68,7 +106,7 @@
 - [ ] Haptic feedback on interactions
 
 ### Phase 2 - API Integration
-- [ ] Replace mock data with real Panchangam API
+- [x] Replace mock data with real Panchangam API ✅ Session 2
 - [ ] Implement caching strategy
 - [ ] Offline support
 
@@ -97,9 +135,13 @@ magizh-calendar-ios/
 ├── Models/           # Data models (Codable, Identifiable)
 ├── ViewModels/       # MVVM view models (ObservableObject)
 ├── Views/
-│   ├── Components/   # Reusable UI components
+│   ├── Components/   # Reusable UI components (GlassCard, DataSourceBadge)
 │   └── Daily/        # Daily view feature
-├── Services/         # API, Location, Notification services (planned)
+├── Services/
+│   ├── APIConfig.swift        # API endpoints configuration
+│   ├── APIResponse.swift      # API response models
+│   ├── Environment.swift      # Dev/staging/production configs
+│   └── PanchangamAPIService.swift  # Async API client
 ├── Core/             # Extensions, Utilities (planned)
 └── Resources/        # Assets, Localization (planned)
 ```

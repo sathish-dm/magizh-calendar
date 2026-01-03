@@ -1,21 +1,20 @@
 import Foundation
 
 /// App environment configuration
-/// Manages API URLs and feature flags for different environments
-enum AppEnvironment: String, CaseIterable {
+/// All properties are nonisolated for safe concurrent access
+enum AppEnvironment: String, CaseIterable, Sendable {
     case development
     case staging
     case production
 
-    /// Current active environment
-    /// Change this to switch environments
-    static var current: AppEnvironment {
+    /// Current active environment - compile-time constant
+    static let current: AppEnvironment = {
         #if DEBUG
         return .development
         #else
         return .production
         #endif
-    }
+    }()
 
     /// Base URL for the API
     var apiBaseURL: String {
@@ -32,9 +31,7 @@ enum AppEnvironment: String, CaseIterable {
     /// Whether to show debug information
     var showDebugInfo: Bool {
         switch self {
-        case .development:
-            return true
-        case .staging:
+        case .development, .staging:
             return true
         case .production:
             return false
@@ -45,7 +42,7 @@ enum AppEnvironment: String, CaseIterable {
     var apiTimeout: TimeInterval {
         switch self {
         case .development:
-            return 30  // Longer timeout for debugging
+            return 30
         case .staging, .production:
             return 15
         }
@@ -53,25 +50,11 @@ enum AppEnvironment: String, CaseIterable {
 
     /// Whether to use mock data when API fails
     var useMockDataFallback: Bool {
-        return true  // Always use fallback for better UX
+        true
     }
 
     /// Display name for debugging
     var displayName: String {
         rawValue.capitalized
-    }
-}
-
-// MARK: - Environment-aware API Config
-
-extension APIConfig {
-    /// Get base URL from current environment
-    static var environmentBaseURL: String {
-        AppEnvironment.current.apiBaseURL
-    }
-
-    /// Get timeout from current environment
-    static var environmentTimeout: TimeInterval {
-        AppEnvironment.current.apiTimeout
     }
 }

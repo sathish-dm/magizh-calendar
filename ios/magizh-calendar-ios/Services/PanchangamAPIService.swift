@@ -1,7 +1,7 @@
 import Foundation
 
 /// Errors that can occur during API calls
-enum APIError: Error, LocalizedError {
+enum APIError: Error, LocalizedError, Sendable {
     case invalidURL
     case networkError(Error)
     case invalidResponse
@@ -27,6 +27,25 @@ enum APIError: Error, LocalizedError {
     }
 }
 
+/// Configuration constants for the API service
+private enum ServiceConfig {
+    #if DEBUG
+    static let baseURL = "http://localhost:8080"
+    static let timeout: TimeInterval = 30
+    #else
+    static let baseURL = "https://api.magizh.com"
+    static let timeout: TimeInterval = 15
+    #endif
+
+    static let dailyEndpoint = "/api/panchangam/daily"
+    static let weeklyEndpoint = "/api/panchangam/weekly"
+    static let healthEndpoint = "/api/panchangam/health"
+
+    static let defaultLatitude = 13.0827
+    static let defaultLongitude = 80.2707
+    static let defaultTimezone = "Asia/Kolkata"
+}
+
 /// Service for making Panchangam API calls
 actor PanchangamAPIService {
 
@@ -43,36 +62,32 @@ actor PanchangamAPIService {
 
     private init() {
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = APIConfig.timeoutInterval
-        config.timeoutIntervalForResource = APIConfig.timeoutInterval * 2
+        config.timeoutIntervalForRequest = ServiceConfig.timeout
+        config.timeoutIntervalForResource = ServiceConfig.timeout * 2
         self.session = URLSession(configuration: config)
-
         self.decoder = JSONDecoder()
     }
 
     // MARK: - Public API
 
     /// Fetch daily panchangam data
-    /// - Parameters:
-    ///   - date: Date to fetch panchangam for
-    ///   - latitude: Location latitude
-    ///   - longitude: Location longitude
-    ///   - timezone: Timezone string
-    /// - Returns: PanchangamAPIResponse
     func fetchDailyPanchangam(
         date: Date,
-        latitude: Double = APIConfig.defaultLatitude,
-        longitude: Double = APIConfig.defaultLongitude,
-        timezone: String = APIConfig.defaultTimezone
+        latitude: Double? = nil,
+        longitude: Double? = nil,
+        timezone: String? = nil
     ) async throws -> PanchangamAPIResponse {
+        let lat = latitude ?? ServiceConfig.defaultLatitude
+        let lng = longitude ?? ServiceConfig.defaultLongitude
+        let tz = timezone ?? ServiceConfig.defaultTimezone
         let dateString = formatDate(date)
 
-        var components = URLComponents(string: APIConfig.baseURL + APIConfig.Endpoints.daily)
+        var components = URLComponents(string: ServiceConfig.baseURL + ServiceConfig.dailyEndpoint)
         components?.queryItems = [
             URLQueryItem(name: "date", value: dateString),
-            URLQueryItem(name: "lat", value: String(latitude)),
-            URLQueryItem(name: "lng", value: String(longitude)),
-            URLQueryItem(name: "timezone", value: timezone)
+            URLQueryItem(name: "lat", value: String(lat)),
+            URLQueryItem(name: "lng", value: String(lng)),
+            URLQueryItem(name: "timezone", value: tz)
         ]
 
         guard let url = components?.url else {
@@ -83,26 +98,23 @@ actor PanchangamAPIService {
     }
 
     /// Fetch weekly panchangam data
-    /// - Parameters:
-    ///   - startDate: Start date of the week
-    ///   - latitude: Location latitude
-    ///   - longitude: Location longitude
-    ///   - timezone: Timezone string
-    /// - Returns: Array of PanchangamAPIResponse
     func fetchWeeklyPanchangam(
         startDate: Date,
-        latitude: Double = APIConfig.defaultLatitude,
-        longitude: Double = APIConfig.defaultLongitude,
-        timezone: String = APIConfig.defaultTimezone
+        latitude: Double? = nil,
+        longitude: Double? = nil,
+        timezone: String? = nil
     ) async throws -> [PanchangamAPIResponse] {
+        let lat = latitude ?? ServiceConfig.defaultLatitude
+        let lng = longitude ?? ServiceConfig.defaultLongitude
+        let tz = timezone ?? ServiceConfig.defaultTimezone
         let dateString = formatDate(startDate)
 
-        var components = URLComponents(string: APIConfig.baseURL + APIConfig.Endpoints.weekly)
+        var components = URLComponents(string: ServiceConfig.baseURL + ServiceConfig.weeklyEndpoint)
         components?.queryItems = [
             URLQueryItem(name: "startDate", value: dateString),
-            URLQueryItem(name: "lat", value: String(latitude)),
-            URLQueryItem(name: "lng", value: String(longitude)),
-            URLQueryItem(name: "timezone", value: timezone)
+            URLQueryItem(name: "lat", value: String(lat)),
+            URLQueryItem(name: "lng", value: String(lng)),
+            URLQueryItem(name: "timezone", value: tz)
         ]
 
         guard let url = components?.url else {
@@ -113,9 +125,8 @@ actor PanchangamAPIService {
     }
 
     /// Check API health
-    /// - Returns: True if API is available
     func checkHealth() async -> Bool {
-        guard let url = URL(string: APIConfig.baseURL + APIConfig.Endpoints.health) else {
+        guard let url = URL(string: ServiceConfig.baseURL + ServiceConfig.healthEndpoint) else {
             return false
         }
 
@@ -177,10 +188,6 @@ actor PanchangamAPIService {
 
 extension PanchangamAPIService {
     /// Fetch daily panchangam and convert to domain model
-    /// - Parameters:
-    ///   - date: Date to fetch
-    ///   - location: Location for calculations
-    /// - Returns: PanchangamData domain model
     func fetchDailyPanchangamModel(
         date: Date,
         location: Location
@@ -200,10 +207,6 @@ extension PanchangamAPIService {
     }
 
     /// Fetch weekly panchangam and convert to domain models
-    /// - Parameters:
-    ///   - startDate: Start date of the week
-    ///   - location: Location for calculations
-    /// - Returns: Array of PanchangamData domain models
     func fetchWeeklyPanchangamModels(
         startDate: Date,
         location: Location

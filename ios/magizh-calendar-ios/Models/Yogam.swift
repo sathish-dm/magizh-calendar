@@ -155,10 +155,6 @@ enum YogamName: String, Codable, CaseIterable {
         case .vishkumbham, .atiganda, .soola, .ganda, .vyagatha,
              .vajra, .vyatipata, .parigha, .vaidhriti:
             return .inauspicious
-
-        // Neutral (none currently, but kept for completeness)
-        default:
-            return .neutral
         }
     }
 

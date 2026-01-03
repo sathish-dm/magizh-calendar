@@ -1,17 +1,10 @@
 import Foundation
 
-/// API Configuration
-enum APIConfig {
-    /// Base URL for the Panchangam API (from environment)
+/// API Configuration - Thread-safe configuration values
+enum APIConfig: Sendable {
+    /// Base URL for the Panchangam API
     static var baseURL: String {
         AppEnvironment.current.apiBaseURL
-    }
-
-    /// API endpoints
-    enum Endpoints {
-        static let daily = "/api/panchangam/daily"
-        static let weekly = "/api/panchangam/weekly"
-        static let health = "/api/panchangam/health"
     }
 
     /// Timeout interval from environment
@@ -19,8 +12,15 @@ enum APIConfig {
         AppEnvironment.current.apiTimeout
     }
 
-    /// Default location (Chennai)
-    static let defaultLatitude = 13.0827
-    static let defaultLongitude = 80.2707
-    static let defaultTimezone = "Asia/Kolkata"
+    /// Default location (Chennai) - compile-time constants
+    static let defaultLatitude: Double = 13.0827
+    static let defaultLongitude: Double = 80.2707
+    static let defaultTimezone: String = "Asia/Kolkata"
+}
+
+/// API endpoint paths - simple string constants
+enum APIEndpoints {
+    static let daily = "/api/panchangam/daily"
+    static let weekly = "/api/panchangam/weekly"
+    static let health = "/api/panchangam/health"
 }

@@ -1,79 +1,65 @@
-# Magizh Calendar API - Claude Code Guide
+# Backend CLAUDE.md - Java/Spring Conventions
 
-## Project Overview
-Tamil Panchangam Calendar REST API built with Spring Boot 3.3 and Java 21.
+> Common rules in `../CLAUDE.md`
 
 ## Tech Stack
-- **Java 21** (LTS) - Records, Pattern Matching, Virtual Threads
-- **Spring Boot 3.3.7** - Latest stable release
-- **Maven** - Build tool
-- **Virtual Threads** - Enabled for scalable concurrency
+
+| Component | Version |
+|-----------|---------|
+| Java | 21 (LTS) |
+| Spring Boot | 3.3.7 |
+| Build | Maven |
+| Concurrency | Virtual Threads |
+| Docs | SpringDoc OpenAPI 2.3 |
 
 ## Project Structure
+
 ```
 src/main/java/com/magizh/calendar/
-├── MagizhCalendarApiApplication.java   # Entry point
+├── MagizhCalendarApiApplication.java
 ├── controller/
-│   └── PanchangamController.java       # REST endpoints
+│   └── PanchangamController.java
 ├── service/
-│   └── PanchangamService.java          # Business logic
-├── model/                              # Java 21 Records
+│   └── PanchangamService.java
+├── model/                    # Java 21 Records
 │   ├── PanchangamResponse.java
 │   ├── TamilDate.java
-│   ├── Nakshatram.java
-│   ├── Thithi.java
-│   ├── Yogam.java
-│   ├── Karanam.java
-│   ├── TimeRange.java
-│   ├── Timings.java
-│   └── FoodStatus.java
-└── config/                             # Configuration (planned)
+│   └── ...
+└── config/
+    ├── GlobalExceptionHandler.java
+    ├── OpenApiConfig.java
+    └── RequestLoggingConfig.java
+```
+
+## Commands
+
+```bash
+# Using Make (recommended)
+make run          # Start server
+make build        # Compile
+make test         # Run tests
+make swagger      # Open Swagger UI
+make docker-run   # Run in Docker
+
+# Using Maven
+./mvnw spring-boot:run
+./mvnw clean compile
+./mvnw clean package
 ```
 
 ## API Endpoints
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/panchangam/daily` | Daily panchangam data |
-| GET | `/api/panchangam/weekly` | Weekly panchangam data |
+| GET | `/api/panchangam/daily` | Daily panchangam |
+| GET | `/api/panchangam/weekly` | Weekly panchangam |
 | GET | `/api/panchangam/health` | Health check |
 
-### Query Parameters
-- `date` / `startDate` - Date in YYYY-MM-DD format
-- `lat` - Latitude (default: 13.0827 Chennai)
-- `lng` - Longitude (default: 80.2707 Chennai)
-- `timezone` - Timezone string (default: Asia/Kolkata)
+**Swagger UI:** http://localhost:8080/swagger-ui/index.html
 
-## Commands
-```bash
-# Build
-mvn clean compile
+## Java 21 Conventions
 
-# Run
-mvn spring-boot:run
-
-# Package
-mvn clean package
-
-# Run JAR
-java -jar target/magizh-calendar-api-0.0.1-SNAPSHOT.jar
-```
-
-## Coding Conventions
-
-### Java 21 Features to Use
-- **Records** for all DTOs (immutable by default)
-- **Sealed interfaces** for type hierarchies
-- **Pattern matching** in switch expressions
-- **var** for local variable type inference
-- **Text blocks** for multi-line strings
-
-### Spring Conventions
-- Constructor injection (no @Autowired needed)
-- @Validated for input validation
-- ResponseEntity for HTTP responses
-- @CrossOrigin for CORS
-
-### Example Record
+### Use Records for DTOs
 ```java
 public record TamilDate(
     String month,
@@ -83,29 +69,60 @@ public record TamilDate(
 ) {}
 ```
 
-### Example Controller
+### Use Sealed Interfaces
 ```java
-@GetMapping("/daily")
-public ResponseEntity<PanchangamResponse> getDaily(
-    @RequestParam @NotNull LocalDate date,
-    @RequestParam(defaultValue = "13.0827") double lat
-) {
-    return ResponseEntity.ok(service.getDailyPanchangam(date, lat, lng, tz));
+public sealed interface YogamType
+    permits Auspicious, Inauspicious, Neutral {}
+```
+
+### Use Pattern Matching
+```java
+return switch (type) {
+    case Auspicious a -> "green";
+    case Inauspicious i -> "red";
+    default -> "gray";
+};
+```
+
+## Spring Conventions
+
+### Constructor Injection
+```java
+// No @Autowired needed
+public PanchangamController(PanchangamService service) {
+    this.service = service;
 }
 ```
 
-## Workflow Rules
-1. Run `mvn clean compile` after changes
-2. Test endpoints with curl before committing
-3. Update PROGRESS.md after milestones
-4. Commit with descriptive messages
+### Validation
+```java
+@GetMapping("/daily")
+public PanchangamResponse getDaily(
+    @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate date,
+    @RequestParam(defaultValue = "13.0827") double lat
+) { }
+```
+
+### Error Responses (RFC 7807)
+```java
+@ExceptionHandler(Exception.class)
+public ProblemDetail handleException(Exception ex) {
+    return ProblemDetail.forStatusAndDetail(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        ex.getMessage()
+    );
+}
+```
 
 ## Configuration
-- Port: 8080
-- Virtual threads: enabled
-- CORS: all origins allowed (dev mode)
-- Actuator endpoints: health, info
 
-## Related Projects
-- **iOS App:** `magizh-calendar-ios` - SwiftUI client
-- **Docs:** See `docs/SUMMARY.md` for architecture overview
+```yaml
+# application.yml
+spring:
+  threads:
+    virtual:
+      enabled: true  # Java 21 Virtual Threads
+
+server:
+  port: 8080
+```

@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: magizh-calendar-api
+  threads:
+    virtual:
+      enabled: true
+
+# CORS Configuration
+  web:
+    cors:
+      allowed-origins: "*"
+      allowed-methods: GET, POST, OPTIONS
+
+# Swiss Ephemeris Configuration
+swisseph:
+  data-path: classpath:ephe/
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+# Logging
+logging:
+  level:
+    com.magizh: DEBUG
+    root: INFO

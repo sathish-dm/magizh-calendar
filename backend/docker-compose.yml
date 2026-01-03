@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: magizh-calendar-api
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/panchangam/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+# For future use with database
+#  postgres:
+#    image: postgres:16-alpine
+#    container_name: magizh-postgres
+#    environment:
+#      POSTGRES_DB: magizh
+#      POSTGRES_USER: magizh
+#      POSTGRES_PASSWORD: magizh123
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+
+#volumes:
+#  postgres_data:

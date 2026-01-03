@@ -97,6 +97,68 @@
 
 ---
 
+## Session 3 - January 4, 2026
+
+### Completed
+
+#### 1. User Settings System
+- [x] Created `Models/AppSettings.swift` - Settings enums:
+  - `TimeFormat` (12h/24h)
+  - `DateFormat` (full/medium/short)
+  - `AppTheme` (system/light/dark)
+- [x] Created `Services/SettingsService.swift`:
+  - UserDefaults persistence with @Published properties
+  - Observable singleton for reactive UI updates
+  - Location management (default + favorites)
+  - Date/time formatting helpers
+  - Reset to defaults functionality
+
+#### 2. Settings UI
+- [x] Created `Views/Settings/SettingsView.swift`:
+  - Location section (default location picker, favorites management)
+  - Display section (time format, date format, theme)
+  - Notifications section (enable toggle)
+  - About section (version, build, reset)
+- [x] Created `FavoriteLocationsView` for managing saved locations
+- [x] Created `AddFavoriteLocationView` for adding new favorites
+
+#### 3. Dark Mode Support
+- [x] Theme setting applies to entire app via `preferredColorScheme`
+- [x] Updated `magizh_calendar_iosApp.swift` to observe theme changes
+- [x] Updated `DailyView` background gradient for dark mode:
+  - Light: white gradient (0.98 → 0.94)
+  - Dark: dark gray gradient (0.1 → 0.05)
+
+#### 4. Settings Button Integration
+- [x] Moved settings button from navigation toolbar into header banner
+- [x] Settings gear icon on right side of location badge
+- [x] Uses glassmorphism style (`.ultraThinMaterial`) matching header
+- [x] Circular button with white icon
+
+#### 5. ViewModel Integration
+- [x] `DailyViewModel` loads default location from `SettingsService` on init
+- [x] `updateLocation()` saves location changes to settings
+- [x] Location persists across app restarts
+
+#### 6. Model Updates
+- [x] Added `displayName` computed property to `Location`
+- [x] Renamed `popularCities` to `popularLocations` for consistency
+
+#### 7. Swift 6 Concurrency Fixes
+- [x] Made `ServiceConfig` properties `nonisolated` in `PanchangamAPIService`
+- [x] Added `Sendable` conformance to `ServiceConfig` enum
+
+#### 8. iOS 26.2 Simulator Setup
+- [x] Downloaded and installed iOS 26.2 simulator runtime (~8.4 GB)
+- [x] Created iPhone 16 Pro simulator with iOS 26.2
+- [x] Successfully built and ran app on new simulator
+
+#### 9. Git
+- [x] Committed all changes: `0c0294c`
+- [x] Pushed to `origin/main`
+
+---
+
 ## Next Steps (Planned)
 
 ### Phase 1 - Core Features
@@ -122,7 +184,8 @@
 
 ### Phase 5 - Polish
 - [ ] Onboarding flow
-- [ ] Settings screen
+- [x] Settings screen ✅ Session 3
+- [x] Dark mode support ✅ Session 3
 - [ ] Widget support
 - [ ] App Store assets
 
@@ -133,15 +196,18 @@
 ```
 magizh-calendar-ios/
 ├── Models/           # Data models (Codable, Identifiable)
+│   └── AppSettings.swift      # Settings enums (TimeFormat, DateFormat, AppTheme)
 ├── ViewModels/       # MVVM view models (ObservableObject)
 ├── Views/
 │   ├── Components/   # Reusable UI components (GlassCard, DataSourceBadge)
-│   └── Daily/        # Daily view feature
+│   ├── Daily/        # Daily view feature
+│   └── Settings/     # Settings UI (SettingsView, FavoriteLocationsView)
 ├── Services/
 │   ├── APIConfig.swift        # API endpoints configuration
 │   ├── APIResponse.swift      # API response models
 │   ├── Environment.swift      # Dev/staging/production configs
-│   └── PanchangamAPIService.swift  # Async API client
+│   ├── PanchangamAPIService.swift  # Async API client
+│   └── SettingsService.swift  # UserDefaults persistence
 ├── Core/             # Extensions, Utilities (planned)
 └── Resources/        # Assets, Localization (planned)
 ```

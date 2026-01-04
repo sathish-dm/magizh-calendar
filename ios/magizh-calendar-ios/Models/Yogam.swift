@@ -68,6 +68,19 @@ enum YogamType: String, Codable {
         }
     }
 
+    /// Localized label based on current app language
+    var localizedLabel: String {
+        let localization = LocalizationService.shared
+        switch self {
+        case .auspicious:
+            return UIStrings.shared.get(.auspicious, for: localization.currentLanguage)
+        case .inauspicious:
+            return UIStrings.shared.get(.avoid, for: localization.currentLanguage)
+        case .neutral:
+            return UIStrings.shared.get(.neutral, for: localization.currentLanguage)
+        }
+    }
+
     /// Color for UI
     var color: Color {
         switch self {
@@ -131,9 +144,14 @@ enum YogamName: String, Codable, CaseIterable {
     case indra = "Indra"
     case vaidhriti = "Vaidhriti"
 
-    /// Tamil/Sanskrit name
+    /// Tamil/Sanskrit name (romanized)
     var tamilName: String {
         rawValue
+    }
+
+    /// Localized name based on current app language
+    var localizedName: String {
+        PanchangamStrings.shared.yogam(rawValue, for: LocalizationService.shared.currentLanguage)
     }
 
     /// Position in the 27-yogam cycle (1-27)

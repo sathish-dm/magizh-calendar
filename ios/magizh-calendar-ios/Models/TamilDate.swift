@@ -32,6 +32,11 @@ struct TamilDate: Codable, Identifiable, Equatable {
     var shortFormatted: String {
         "\(month.tamilName) \(day)"
     }
+
+    /// Localized short format (e.g., "தை 16" in Tamil or "Thai 16" in English)
+    var localizedFormatted: String {
+        "\(month.localizedName) \(day)"
+    }
 }
 
 // MARK: - Tamil Month
@@ -51,9 +56,14 @@ enum TamilMonth: String, Codable, CaseIterable {
     case maasi = "Maasi"
     case panguni = "Panguni"
 
-    /// Tamil name of the month
+    /// Tamil name of the month (romanized)
     var tamilName: String {
         rawValue
+    }
+
+    /// Localized name based on current app language
+    var localizedName: String {
+        CalendarStrings.shared.month(rawValue, for: LocalizationService.shared.currentLanguage)
     }
 
     /// Month number (1-12, starting from Chithirai)
@@ -118,9 +128,14 @@ enum Vaaram: String, Codable, CaseIterable {
     case velli = "Velli"          // Friday
     case sani = "Sani"            // Saturday
 
-    /// Tamil name
+    /// Tamil name (romanized)
     var tamilName: String {
         rawValue
+    }
+
+    /// Localized name based on current app language
+    var localizedName: String {
+        CalendarStrings.shared.weekday(rawValue, for: LocalizationService.shared.currentLanguage)
     }
 
     /// English equivalent

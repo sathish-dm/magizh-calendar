@@ -67,12 +67,17 @@ enum Paksha: String, Codable, CaseIterable {
     case shukla = "Shukla"   // Bright/waxing fortnight
     case krishna = "Krishna" // Dark/waning fortnight
 
-    /// Tamil name
+    /// Tamil name (romanized)
     var tamilName: String {
         switch self {
         case .shukla: return "Valar Pirai"   // Growing moon
         case .krishna: return "Thei Pirai"   // Waning moon
         }
+    }
+
+    /// Localized name based on current app language
+    var localizedName: String {
+        PanchangamStrings.shared.paksha(rawValue, for: LocalizationService.shared.currentLanguage)
     }
 
     /// Description
@@ -108,9 +113,14 @@ enum ThithiName: String, Codable, CaseIterable {
     // Alias for Pradosham calculations
     static let pradosham = ThithiName.trayodasi
 
-    /// Tamil name
+    /// Tamil name (romanized)
     var tamilName: String {
         rawValue
+    }
+
+    /// Localized name based on current app language
+    var localizedName: String {
+        PanchangamStrings.shared.thithi(rawValue, for: LocalizationService.shared.currentLanguage)
     }
 
     /// Thithi number (1-15)

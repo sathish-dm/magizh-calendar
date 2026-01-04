@@ -50,9 +50,14 @@ enum KaranamName: String, Codable, CaseIterable {
     case naga = "Naga"           // Second half of Amavasai
     case kimstughna = "Kimstughna"    // First half of Shukla Prathama
 
-    /// Tamil/Sanskrit name
+    /// Tamil/Sanskrit name (romanized)
     var tamilName: String {
         rawValue
+    }
+
+    /// Localized name based on current app language
+    var localizedName: String {
+        PanchangamStrings.shared.karanam(rawValue, for: LocalizationService.shared.currentLanguage)
     }
 
     /// Whether this is a fixed (Sthira) or movable (Chara) Karanam

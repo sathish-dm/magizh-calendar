@@ -17,6 +17,7 @@ final class SettingsService: ObservableObject {
         static let timeFormat = "timeFormat"
         static let dateFormat = "dateFormat"
         static let theme = "theme"
+        static let language = "appLanguage"
         static let notificationsEnabled = "notificationsEnabled"
         static let favoriteLocations = "favoriteLocations"
         static let lastViewedDate = "lastViewedDate"
@@ -35,6 +36,13 @@ final class SettingsService: ObservableObject {
 
     @Published var theme: AppTheme {
         didSet { UserDefaults.standard.set(theme.rawValue, forKey: Keys.theme) }
+    }
+
+    @Published var language: AppLanguage {
+        didSet {
+            UserDefaults.standard.set(language.rawValue, forKey: Keys.language)
+            LocalizationService.shared.setLanguage(language)
+        }
     }
 
     @Published var notificationsEnabled: Bool {
@@ -92,6 +100,15 @@ final class SettingsService: ObservableObject {
             self.theme = appTheme
         } else {
             self.theme = .system
+        }
+
+        // Load language
+        if let rawValue = UserDefaults.standard.string(forKey: Keys.language),
+           let appLanguage = AppLanguage(rawValue: rawValue) {
+            self.language = appLanguage
+            LocalizationService.shared.setLanguage(appLanguage)
+        } else {
+            self.language = .english
         }
 
         // Load notifications enabled
@@ -173,6 +190,7 @@ final class SettingsService: ObservableObject {
         timeFormat = .twelveHour
         dateFormat = .full
         theme = .system
+        language = .english
         notificationsEnabled = false
         isVegetarian = false
         favoriteLocations = []

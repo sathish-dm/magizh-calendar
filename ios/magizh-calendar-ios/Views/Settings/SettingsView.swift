@@ -8,6 +8,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                languageSection
                 locationSection
                 displaySection
                 foodPreferencesSection
@@ -25,6 +26,29 @@ struct SettingsView: View {
                     }
                 }
             }
+        }
+    }
+
+    // MARK: - Language Section
+
+    private var languageSection: some View {
+        Section {
+            Picker("Language", selection: $settings.language) {
+                ForEach(AppLanguage.allCases) { language in
+                    HStack {
+                        Text(language.displayName)
+                        if language == .tamil {
+                            Text("(Tamil)")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .tag(language)
+                }
+            }
+        } header: {
+            Text("Language")
+        } footer: {
+            Text("Change the app display language. Panchangam names will be shown in the selected language.")
         }
     }
 

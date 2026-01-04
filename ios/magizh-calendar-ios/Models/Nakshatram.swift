@@ -60,9 +60,14 @@ enum NakshatramName: String, Codable, CaseIterable {
     case uthirattathi = "Uthirattathi"
     case revathi = "Revathi"
 
-    /// Tamil name of the Nakshatram
+    /// Tamil name of the Nakshatram (romanized)
     var tamilName: String {
         rawValue
+    }
+
+    /// Localized name based on current app language
+    var localizedName: String {
+        PanchangamStrings.shared.nakshatram(rawValue, for: LocalizationService.shared.currentLanguage)
     }
 
     /// Position in the 27-star cycle (1-27)

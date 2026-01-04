@@ -8,6 +8,7 @@ struct DailyView: View {
 
     @StateObject private var viewModel = DailyViewModel()
     @ObservedObject private var settings = SettingsService.shared
+    @ObservedObject private var localization = LocalizationService.shared
     @Environment(\.colorScheme) private var colorScheme
     @State private var isFloating = false
     @State private var showingSettings = false
@@ -131,7 +132,7 @@ struct DailyView: View {
     private var tamilDateBadge: some View {
         Group {
             if let data = viewModel.panchangamData {
-                Text("\(data.tamilDate.shortFormatted) \u{2022} \(data.vaaram.tamilName)")
+                Text("\(data.tamilDate.localizedFormatted) \u{2022} \(data.vaaram.localizedName)")
                     .font(.subheadline)
                     .foregroundStyle(.white.opacity(0.9))
                     .padding(.horizontal, Spacing.lg)
@@ -191,7 +192,7 @@ struct DailyView: View {
 
                 // Content
                 VStack(alignment: .leading, spacing: Spacing.xs) {
-                    Text(effectiveType == .regular ? "Regular Day" : data.foodStatus.shortMessage)
+                    Text(effectiveType == .regular ? localization.string(.regularDay) : data.foodStatus.shortMessage)
                         .font(.headline)
                         .fontWeight(.semibold)
 
@@ -199,11 +200,11 @@ struct DailyView: View {
                     if settings.isVegetarian {
                         if isVegModified {
                             // Was "Avoid Non-Veg" but user is vegetarian
-                            Text("No dietary concerns")
+                            Text(localization.string(.noDietaryConcerns))
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         } else if effectiveType == .regular {
-                            Text("No special observances today")
+                            Text(localization.string(.noSpecialObservances))
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         } else if effectiveType == .strictFast {
@@ -214,7 +215,7 @@ struct DailyView: View {
                     } else {
                         // Non-vegetarian user - show full messages
                         Text(effectiveType == .regular
-                             ? "Safe to cook non-veg"
+                             ? localization.string(.safeToCoookNonVeg)
                              : data.foodStatus.type.defaultReason)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
@@ -227,7 +228,7 @@ struct DailyView: View {
 
                     // Storage warning (only for non-vegetarians with non-regular status)
                     if !settings.isVegetarian && data.foodStatus.type != .regular {
-                        Text("Avoid storing overnight")
+                        Text(localization.string(.avoidStoringOvernight))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .padding(.top, Spacing.xs)
@@ -306,10 +307,10 @@ struct DailyView: View {
                         )
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Today's Panchangam")
+                        Text(localization.string(.todaysPanchangam))
                             .font(.headline)
                             .fontWeight(.semibold)
-                        Text("Five Elements of Time")
+                        Text(localization.string(.fiveElementsOfTime))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -319,16 +320,16 @@ struct DailyView: View {
                 VStack(spacing: Spacing.md) {
                     angamRow(
                         icon: "star.fill",
-                        label: "Nakshatram",
-                        value: data.nakshatram.name.tamilName,
+                        label: localization.string(.nakshatram),
+                        value: data.nakshatram.name.localizedName,
                         endTime: data.nakshatram.endTimeFormatted,
                         accentColor: .purple
                     )
 
                     angamRow(
                         icon: "moon.fill",
-                        label: "Thithi",
-                        value: "\(data.thithi.name.tamilName) (\(data.thithi.paksha.rawValue))",
+                        label: localization.string(.thithi),
+                        value: "\(data.thithi.name.localizedName) (\(data.thithi.paksha.localizedName))",
                         endTime: data.thithi.endTimeFormatted,
                         accentColor: .blue
                     )
@@ -337,8 +338,8 @@ struct DailyView: View {
 
                     angamRow(
                         icon: "arrow.triangle.2.circlepath",
-                        label: "Karanam",
-                        value: data.karanam.name.tamilName,
+                        label: localization.string(.karanam),
+                        value: data.karanam.name.localizedName,
                         endTime: data.karanam.endTimeFormatted,
                         accentColor: .indigo
                     )
@@ -385,7 +386,7 @@ struct DailyView: View {
             Spacer()
 
             // End time badge
-            Text("Ends \(endTime)")
+            Text("\(localization.string(.ends)) \(endTime)")
                 .font(.caption2)
                 .foregroundStyle(accentColor)
                 .padding(.horizontal, Spacing.sm)
@@ -422,10 +423,10 @@ struct DailyView: View {
 
                 // Content
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Yogam")
+                    Text(localization.string(.yogam))
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    Text(yogam.name.tamilName)
+                    Text(yogam.name.localizedName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                 }
@@ -433,7 +434,7 @@ struct DailyView: View {
                 Spacer()
 
                 // Auspicious/Avoid badge
-                Text(yogam.type.label)
+                Text(yogam.type.localizedLabel)
                     .font(.caption2)
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
@@ -454,7 +455,7 @@ struct DailyView: View {
 
             // Recommendation
             if yogam.type == .auspicious {
-                Text("Excellent for: New ventures, important decisions")
+                Text(localization.string(.excellentForNewVentures))
                     .font(.caption2)
                     .foregroundStyle(color)
                     .padding(Spacing.sm)
@@ -483,7 +484,7 @@ struct DailyView: View {
                 Image(systemName: "sunrise.fill")
                     .foregroundStyle(.orange)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Sunrise")
+                    Text(localization.string(.sunrise))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text(data.sunriseFormatted)
@@ -499,7 +500,7 @@ struct DailyView: View {
                 Image(systemName: "sunset.fill")
                     .foregroundStyle(.indigo)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Sunset")
+                    Text(localization.string(.sunset))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text(data.sunsetFormatted)
@@ -540,7 +541,7 @@ struct DailyView: View {
                                 .fill(Color.orange.opacity(0.15))
                         )
 
-                    Text("Auspicious Timings")
+                    Text(localization.string(.auspiciousTimings))
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
@@ -551,20 +552,20 @@ struct DailyView: View {
                         timingRow(
                             type: .nallaNeram,
                             timeRange: firstNallaNeram,
-                            badgeText: "Best Time"
+                            badgeText: localization.string(.bestTime)
                         )
                     }
 
                     timingRow(
                         type: .rahukaalam,
                         timeRange: data.rahukaalam,
-                        badgeText: "Avoid"
+                        badgeText: localization.string(.avoid)
                     )
 
                     timingRow(
                         type: .yamagandam,
                         timeRange: data.yamagandam,
-                        badgeText: "Caution"
+                        badgeText: localization.string(.caution)
                     )
                 }
             }
@@ -634,13 +635,13 @@ struct DailyView: View {
             VStack(spacing: Spacing.sm) {
                 HStack {
                     VStack(alignment: .leading, spacing: Spacing.xs) {
-                        Text("Current Status")
+                        Text(localization.string(.currentStatus))
                             .font(.subheadline)
                             .foregroundStyle(.white.opacity(0.9))
 
                         HStack(spacing: Spacing.sm) {
                             Image(systemName: "sparkles")
-                            Text("\(data.yogam.name.tamilName) Active")
+                            Text("\(data.yogam.name.localizedName) \(localization.string(.active))")
                                 .fontWeight(.semibold)
                         }
                         .font(.title3)
@@ -702,12 +703,12 @@ struct DailyView: View {
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Verified Panchangam Data")
+                    Text(localization.string(.verifiedPanchangamData))
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundStyle(.green)
 
-                    Text("Thirukanitha method \u{2022} Traditional sources")
+                    Text(localization.string(.thirukanithaMethod))
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
@@ -723,7 +724,7 @@ struct DailyView: View {
         VStack(spacing: Spacing.lg) {
             ProgressView()
                 .scaleEffect(1.5)
-            Text("Loading panchangam...")
+            Text(localization.string(.loadingPanchangam))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -738,7 +739,7 @@ struct DailyView: View {
                     .font(.largeTitle)
                     .foregroundStyle(.red)
 
-                Text("Unable to Load")
+                Text(localization.string(.unableToLoad))
                     .font(.headline)
 
                 Text(message)
@@ -747,7 +748,7 @@ struct DailyView: View {
                     .multilineTextAlignment(.center)
 
                 Button(action: viewModel.retry) {
-                    Label("Try Again", systemImage: "arrow.clockwise")
+                    Label(localization.string(.tryAgain), systemImage: "arrow.clockwise")
                         .font(.subheadline)
                         .fontWeight(.medium)
                 }

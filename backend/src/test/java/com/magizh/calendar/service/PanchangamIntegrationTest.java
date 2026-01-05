@@ -46,7 +46,8 @@ class PanchangamIntegrationTest {
         ThithiCalculator thithiCalculator = new ThithiCalculator(astronomyService);
         YogamCalculator yogamCalculator = new YogamCalculator(astronomyService);
         KaranamCalculator karanamCalculator = new KaranamCalculator(astronomyService);
-        TimingsCalculator timingsCalculator = new TimingsCalculator();
+        GowriCalculator gowriCalculator = new GowriCalculator();
+        TimingsCalculator timingsCalculator = new TimingsCalculator(gowriCalculator);
         TamilCalendarService tamilCalendarService = new TamilCalendarService(astronomyService);
 
         panchangamService = new PanchangamService(

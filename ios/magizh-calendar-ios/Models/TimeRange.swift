@@ -92,6 +92,7 @@ enum TimeRangeType: String, Codable {
     case rahukaalam = "Rahukaalam"
     case yamagandam = "Yamagandam"
     case kuligai = "Kuligai"
+    case gowriNallaNeram = "Gowri Nalla Neram"
     case abhijitMuhurtam = "Abhijit Muhurtam"
     case brahmaMuhurtam = "Brahma Muhurtam"
 
@@ -102,6 +103,7 @@ enum TimeRangeType: String, Codable {
         case .rahukaalam: return "Raagu Kaalam"
         case .yamagandam: return "Ema Gandam"
         case .kuligai: return "Kuligai"
+        case .gowriNallaNeram: return "கௌரி நல்ல நேரம்"
         case .abhijitMuhurtam: return "Abhijit Muhurtam"
         case .brahmaMuhurtam: return "Brahma Muhurtam"
         }
@@ -118,6 +120,8 @@ enum TimeRangeType: String, Codable {
             return "Inauspicious period ruled by Yama - avoid travel"
         case .kuligai:
             return "Inauspicious period - avoid important work"
+        case .gowriNallaNeram:
+            return "Auspicious time per Gowri Panchangam calculation"
         case .abhijitMuhurtam:
             return "Most auspicious time of the day (midday)"
         case .brahmaMuhurtam:
@@ -128,7 +132,7 @@ enum TimeRangeType: String, Codable {
     /// Whether this is an auspicious time
     var isAuspicious: Bool {
         switch self {
-        case .nallaNeram, .abhijitMuhurtam, .brahmaMuhurtam:
+        case .nallaNeram, .gowriNallaNeram, .abhijitMuhurtam, .brahmaMuhurtam:
             return true
         case .rahukaalam, .yamagandam, .kuligai:
             return false
@@ -142,6 +146,7 @@ enum TimeRangeType: String, Codable {
         case .rahukaalam: return "moon.fill"
         case .yamagandam: return "exclamationmark.triangle.fill"
         case .kuligai: return "xmark.circle.fill"
+        case .gowriNallaNeram: return "star.circle.fill"
         case .abhijitMuhurtam: return "sun.max.fill"
         case .brahmaMuhurtam: return "sunrise.fill"
         }

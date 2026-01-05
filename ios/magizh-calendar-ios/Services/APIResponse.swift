@@ -67,6 +67,7 @@ struct TimingsAPI: Codable, Sendable {
     let rahukaalam: TimeRangeAPI
     let yamagandam: TimeRangeAPI
     let kuligai: TimeRangeAPI?
+    let gowriNallaNeram: [TimeRangeAPI]?
 }
 
 struct TimeRangeAPI: Codable, Sendable {
@@ -172,6 +173,16 @@ extension PanchangamAPIResponse {
             kuligaiRange = TimeRange(startTime: kuligaiStart, endTime: kuligaiEnd, type: .kuligai)
         }
 
+        // Parse Gowri Nalla Neram
+        var gowriNallaNeramRanges: [TimeRange] = []
+        if let gowriRanges = timings.gowriNallaNeram {
+            gowriNallaNeramRanges = gowriRanges.compactMap { range -> TimeRange? in
+                guard let start = isoFormatter.date(from: range.startTime),
+                      let end = isoFormatter.date(from: range.endTime) else { return nil }
+                return TimeRange(startTime: start, endTime: end, type: .gowriNallaNeram)
+            }
+        }
+
         // Parse Food Status
         let foodStatusModel = parseFoodStatus(foodStatus, currentDate: gregorianDate)
 
@@ -199,6 +210,7 @@ extension PanchangamAPIResponse {
             rahukaalam: rahukaalamRange,
             yamagandam: yamagandamRange,
             kuligai: kuligaiRange,
+            gowriNallaNeram: gowriNallaNeramRanges,
             foodStatus: foodStatusModel,
             nextAuspiciousDay: nextAuspiciousDay
         )

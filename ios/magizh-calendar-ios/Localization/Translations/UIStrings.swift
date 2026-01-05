@@ -28,6 +28,16 @@ enum LocalizedStringKey: String, CaseIterable {
     case yamagandam
     case kuligai
 
+    // Time Period Headers
+    case auspiciousPeriods
+    case inauspiciousPeriods
+    case bestTimesForNewWork
+    case avoidImportantWork
+
+    // Time Labels
+    case morning
+    case afternoon
+
     // Status Labels
     case auspicious
     case inauspicious
@@ -136,6 +146,16 @@ final class UIStrings {
             .yamagandam: "Yamagandam",
             .kuligai: "Kuligai",
 
+            // Time Period Headers
+            .auspiciousPeriods: "Auspicious Times Today",
+            .inauspiciousPeriods: "Avoid These Times",
+            .bestTimesForNewWork: "Best times to start new work",
+            .avoidImportantWork: "Avoid important activities during these periods",
+
+            // Time Labels
+            .morning: "Morning",
+            .afternoon: "Afternoon",
+
             // Status Labels
             .auspicious: "AUSPICIOUS",
             .inauspicious: "INAUSPICIOUS",
@@ -238,6 +258,16 @@ final class UIStrings {
             .rahukaalam: "ராகு காலம்",
             .yamagandam: "எமகண்டம்",
             .kuligai: "குளிகை",
+
+            // Time Period Headers
+            .auspiciousPeriods: "இன்றைய நல்ல நேரங்கள்",
+            .inauspiciousPeriods: "தவிர்க்க வேண்டிய நேரங்கள்",
+            .bestTimesForNewWork: "புதிய வேலைகளைத் தொடங்க சிறந்த நேரம்",
+            .avoidImportantWork: "இந்த நேரங்களில் முக்கிய செயல்களைத் தவிர்க்கவும்",
+
+            // Time Labels
+            .morning: "காலை",
+            .afternoon: "பிற்பகல்",
 
             // Status Labels
             .auspicious: "நல்லது",

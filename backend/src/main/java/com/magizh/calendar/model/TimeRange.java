@@ -17,7 +17,8 @@ public record TimeRange(
         NALLA_NERAM("nallaNeram", true),
         RAHUKAALAM("rahukaalam", false),
         YAMAGANDAM("yamagandam", false),
-        KULIGAI("kuligai", false);
+        KULIGAI("kuligai", false),
+        GOWRI_NALLA_NERAM("gowriNallaNeram", true);
 
         private final String value;
         private final boolean auspicious;

@@ -164,8 +164,8 @@ struct DailyView: View {
     @ViewBuilder
     private func contentSection(data: PanchangamData) -> some View {
         foodStatusCard(data: data)
-        panchangamSection(data: data)
         timingsSection(data: data)
+        panchangamSection(data: data)
         currentStatusCard(data: data)
         verificationBadge
     }
@@ -529,53 +529,198 @@ struct DailyView: View {
     // MARK: - Timings Section
 
     private func timingsSection(data: PanchangamData) -> some View {
-        GlassCard {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
-                // Header
-                HStack(spacing: Spacing.sm) {
-                    Image(systemName: "clock.fill")
-                        .foregroundStyle(.orange)
-                        .frame(width: 28, height: 28)
-                        .background(
-                            RoundedRectangle(cornerRadius: CornerRadius.sm, style: .continuous)
-                                .fill(Color.orange.opacity(0.15))
-                        )
+        VStack(spacing: Spacing.lg) {
+            // AUSPICIOUS TIMES CARD
+            GlassCard(glowColor: .green) {
+                VStack(alignment: .leading, spacing: Spacing.lg) {
+                    // Header
+                    HStack(spacing: Spacing.sm) {
+                        Image(systemName: "star.fill")
+                            .foregroundStyle(.green)
+                            .frame(width: 28, height: 28)
+                            .background(
+                                RoundedRectangle(cornerRadius: CornerRadius.sm, style: .continuous)
+                                    .fill(Color.green.opacity(0.15))
+                            )
 
-                    Text(localization.string(.auspiciousTimings))
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                }
-
-                // Timings
-                VStack(spacing: Spacing.md) {
-                    if let firstNallaNeram = data.nallaNeram.first {
-                        timingRow(
-                            type: .nallaNeram,
-                            timeRange: firstNallaNeram,
-                            badgeText: localization.string(.bestTime)
-                        )
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(localization.string(.auspiciousPeriods))
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                            Text(localization.string(.bestTimesForNewWork))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
 
-                    timingRow(
-                        type: .rahukaalam,
-                        timeRange: data.rahukaalam,
-                        badgeText: localization.string(.avoid)
-                    )
+                    // Display ALL Nalla Neram periods
+                    VStack(spacing: Spacing.md) {
+                        ForEach(Array(data.nallaNeram.enumerated()), id: \.element.id) { index, nallaNeram in
+                            timingRow(
+                                type: .nallaNeram,
+                                timeRange: nallaNeram,
+                                badgeText: index == 0
+                                    ? localization.string(.morning)
+                                    : localization.string(.afternoon),
+                                isPrimary: true
+                            )
+                        }
 
-                    timingRow(
-                        type: .yamagandam,
-                        timeRange: data.yamagandam,
-                        badgeText: localization.string(.caution)
-                    )
+                        // Display Gowri Nalla Neram if available
+                        if !data.gowriNallaNeram.isEmpty {
+                            Divider()
+                                .padding(.vertical, Spacing.xs)
+
+                            HStack(spacing: Spacing.xs) {
+                                Image(systemName: "star.circle.fill")
+                                    .font(.caption)
+                                    .foregroundStyle(.green)
+                                Text("Gowri Nalla Neram")
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                            ForEach(data.gowriNallaNeram) { gowriTime in
+                                timingRow(
+                                    type: .gowriNallaNeram,
+                                    timeRange: gowriTime,
+                                    badgeText: localization.string(.bestTime),
+                                    isPrimary: false
+                                )
+                            }
+                        }
+                    }
                 }
             }
+
+            // INAUSPICIOUS TIMES CARD
+            GlassCard(glowColor: .red) {
+                VStack(alignment: .leading, spacing: Spacing.lg) {
+                    // Header
+                    HStack(spacing: Spacing.sm) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.red)
+                            .frame(width: 28, height: 28)
+                            .background(
+                                RoundedRectangle(cornerRadius: CornerRadius.sm, style: .continuous)
+                                    .fill(Color.red.opacity(0.15))
+                            )
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(localization.string(.inauspiciousPeriods))
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                            Text(localization.string(.avoidImportantWork))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    // Timings with Rahukaalam most prominent
+                    VStack(spacing: Spacing.md) {
+                        // RAHUKAALAM - Most prominent
+                        rahukaalamRow(timeRange: data.rahukaalam)
+
+                        // YAMAGANDAM
+                        timingRow(
+                            type: .yamagandam,
+                            timeRange: data.yamagandam,
+                            badgeText: localization.string(.caution),
+                            isPrimary: false
+                        )
+
+                        // KULIGAI
+                        if let kuligai = data.kuligai {
+                            timingRow(
+                                type: .kuligai,
+                                timeRange: kuligai,
+                                badgeText: localization.string(.avoid),
+                                isPrimary: false
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func rahukaalamRow(timeRange: TimeRange) -> some View {
+        VStack(spacing: Spacing.sm) {
+            HStack {
+                // Left accent - THICKER for emphasis
+                Rectangle()
+                    .fill(Color.red)
+                    .frame(width: 6)
+
+                VStack(alignment: .leading, spacing: Spacing.xs) {
+                    HStack {
+                        Image(systemName: "moon.fill")
+                            .foregroundStyle(.red)
+                            .font(.title3)
+                        Text(localization.string(.rahukaalam))
+                            .font(.headline)
+                            .fontWeight(.bold)
+
+                        Spacer()
+
+                        // More prominent badge
+                        Text(localization.string(.avoid))
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, Spacing.md)
+                            .padding(.vertical, Spacing.sm)
+                            .background(
+                                Capsule()
+                                    .fill(Color.red.gradient)
+                            )
+                    }
+
+                    // Large time display
+                    Text(timeRange.formatted)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.red)
+
+                    // Active state
+                    if timeRange.isCurrentlyActive {
+                        if let remaining = timeRange.timeRemainingFormatted {
+                            HStack(spacing: Spacing.xs) {
+                                Image(systemName: "clock.fill")
+                                    .font(.caption2)
+                                Text(remaining)
+                            }
+                            .font(.caption)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, Spacing.sm)
+                            .padding(.vertical, Spacing.xs)
+                            .background(Color.red.opacity(0.8))
+                            .clipShape(Capsule())
+                        }
+                    }
+                }
+                .padding(.leading, Spacing.sm)
+            }
+            .padding(Spacing.lg)
+            .background(
+                RoundedRectangle(cornerRadius: CornerRadius.lg, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: CornerRadius.lg, style: .continuous)
+                            .stroke(Color.red.opacity(0.3), lineWidth: 2)
+                    )
+            )
+            .shadow(color: .red.opacity(0.2), radius: 10)
         }
     }
 
     private func timingRow(
         type: TimeRangeType,
         timeRange: TimeRange,
-        badgeText: String
+        badgeText: String,
+        isPrimary: Bool = false
     ) -> some View {
         let color: Color = type.isAuspicious ? .green : (type == .rahukaalam ? .red : .orange)
 
@@ -583,30 +728,35 @@ struct DailyView: View {
             // Left accent
             Rectangle()
                 .fill(color)
-                .frame(width: 4)
+                .frame(width: isPrimary ? 5 : 4)
 
             VStack(alignment: .leading, spacing: Spacing.xs) {
                 HStack {
                     Image(systemName: type.iconName)
                         .foregroundStyle(color)
                     Text(type.rawValue)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                        .font(isPrimary ? .callout : .subheadline)
+                        .fontWeight(isPrimary ? .semibold : .medium)
 
                     Spacer()
 
                     Text(badgeText)
                         .font(.caption2)
                         .fontWeight(.semibold)
-                        .foregroundStyle(color)
+                        .foregroundStyle(isPrimary ? .white : color)
                         .padding(.horizontal, Spacing.sm)
                         .padding(.vertical, Spacing.xs)
-                        .background(color.opacity(0.15))
-                        .clipShape(Capsule())
+                        .background {
+                            if isPrimary {
+                                Capsule().fill(color.gradient)
+                            } else {
+                                Capsule().fill(color.opacity(0.15))
+                            }
+                        }
                 }
 
                 Text(timeRange.formatted)
-                    .font(.subheadline)
+                    .font(isPrimary ? .callout : .subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(color)
 

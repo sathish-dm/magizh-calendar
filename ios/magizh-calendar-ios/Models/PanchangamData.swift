@@ -46,6 +46,9 @@ struct PanchangamData: Codable, Identifiable, Equatable {
     /// Kuligai (inauspicious period)
     let kuligai: TimeRange?
 
+    /// Gowri Nalla Neram (Gowri Panchangam auspicious times)
+    let gowriNallaNeram: [TimeRange]
+
     // MARK: - Derived/Food Status
 
     /// Food status for the day
@@ -71,6 +74,7 @@ struct PanchangamData: Codable, Identifiable, Equatable {
         rahukaalam: TimeRange,
         yamagandam: TimeRange,
         kuligai: TimeRange? = nil,
+        gowriNallaNeram: [TimeRange] = [],
         foodStatus: FoodStatus,
         nextAuspiciousDay: AuspiciousDay? = nil
     ) {
@@ -88,6 +92,7 @@ struct PanchangamData: Codable, Identifiable, Equatable {
         self.rahukaalam = rahukaalam
         self.yamagandam = yamagandam
         self.kuligai = kuligai
+        self.gowriNallaNeram = gowriNallaNeram
         self.foodStatus = foodStatus
         self.nextAuspiciousDay = nextAuspiciousDay
     }
@@ -216,6 +221,7 @@ extension PanchangamData {
         case rahukaalam
         case yamagandam
         case kuligai
+        case gowriNallaNeram = "gowri_nalla_neram"
         case foodStatus = "food_status"
         case nextAuspiciousDay = "next_auspicious_day"
     }
@@ -271,6 +277,7 @@ extension PanchangamData {
             rahukaalam: TimeRange(startTime: rahuStart, endTime: rahuEnd, type: .rahukaalam),
             yamagandam: TimeRange(startTime: yamaStart, endTime: yamaEnd, type: .yamagandam),
             kuligai: TimeRange(startTime: kuligaiStart, endTime: kuligaiEnd, type: .kuligai),
+            gowriNallaNeram: [],
             foodStatus: .sampleRegular,
             nextAuspiciousDay: .sampleEkadasi
         )
@@ -293,6 +300,7 @@ extension PanchangamData {
             rahukaalam: data.rahukaalam,
             yamagandam: data.yamagandam,
             kuligai: data.kuligai,
+            gowriNallaNeram: data.gowriNallaNeram,
             foodStatus: .sampleAvoidNonVeg,
             nextAuspiciousDay: data.nextAuspiciousDay
         )
@@ -315,6 +323,7 @@ extension PanchangamData {
             rahukaalam: data.rahukaalam,
             yamagandam: data.yamagandam,
             kuligai: data.kuligai,
+            gowriNallaNeram: data.gowriNallaNeram,
             foodStatus: .sampleFasting,
             nextAuspiciousDay: nil
         )

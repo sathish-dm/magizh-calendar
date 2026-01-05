@@ -262,6 +262,170 @@
 
 ---
 
+## Session 6 - January 5, 2026
+
+### Completed
+
+#### 1. Phase 1: iOS UI Improvements - Complete Time Periods Display
+
+**Objective**: Show ALL time periods prominently to compete with Nila Tamil Calendar
+
+- [x] **Reorganized Home Screen Layout** (`DailyView.swift` lines 165-171)
+  - Moved timings section to 2nd position (was 3rd)
+  - New order: Food Status → Timings → Panchangam → Current Status → Verification
+  - Rationale: Time periods consulted more frequently than individual Angams
+
+- [x] **Complete Rewrite of `timingsSection()`** (`DailyView.swift` lines 531-810)
+  - Split into TWO cards: Auspicious (green glow) + Inauspicious (red glow)
+  - Show ALL Nalla Neram periods: `ForEach(data.nallaNeram)` instead of just first
+  - Added Kuligai display (was completely missing)
+  - Made Rahukaalam MUCH more prominent with dedicated `rahukaalamRow()` helper
+
+- [x] **Created `rahukaalamRow()` Helper** (lines 767-810)
+  - Larger font (title3 vs subheadline)
+  - Thicker accent bar (6pt vs 4pt)
+  - Red border and glow effect
+  - Bold "AVOID" badge with gradient
+  - More padding for visual prominence
+
+- [x] **Updated `timingRow()` Signature** (lines 691-766)
+  - Added `isPrimary: Bool = false` parameter
+  - Adjusts font sizes based on isPrimary
+  - Fixed Swift type ambiguity with background modifier
+
+- [x] **Added 6 Localization Strings** (`UIStrings.swift`)
+  - English + Tamil translations:
+    - `auspiciousPeriods` / "இன்றைய நல்ல நேரங்கள்"
+    - `inauspiciousPeriods` / "தவிர்க்க வேண்டிய நேரங்கள்"
+    - `bestTimesForNewWork` / "புதிய வேலைகளைத் தொடங்க சிறந்த நேரம்"
+    - `avoidImportantWork` / "இந்த நேரங்களில் முக்கிய செயல்களைத் தவிர்க்கவும்"
+    - `morning` / "காலை"
+    - `afternoon` / "பிற்பகல்"
+
+#### 2. Phase 2: Gowri Nalla Neram Feature (Backend + iOS)
+
+**What is Gowri Panchangam?**
+- Divides day (sunrise to sunset) into 8 equal segments
+- Each segment has a Gowri state (5 auspicious, 3 inauspicious)
+- Pattern varies by weekday (traditional Pambu Panchangam)
+- Used for planning travel, purchases, ceremonies
+
+- [x] **Backend: Created `GowriCalculator.java`** (96 lines)
+  - 7 weekday patterns (8 states each)
+  - Auspicious states: Amirdha, Uthi, Laabam, Sugam, Dhanam
+  - Inauspicious states: Rogam, Soram, Visham
+  - `calculate(sunrise, sunset, dayOfWeek)` returns `List<TimeRange>` of auspicious periods
+
+- [x] **Backend: Updated Models**
+  - `TimeRange.java` - Added `GOWRI_NALLA_NERAM` enum value
+  - `Timings.java` - Added `gowriNallaNeram` field (`List<TimeRange>`)
+
+- [x] **Backend: Updated `TimingsCalculator.java`**
+  - Added `GowriCalculator` dependency injection
+  - Integrated Gowri calculation in `calculate()` method
+
+- [x] **Backend: Comprehensive Test Coverage**
+  - Created `GowriCalculatorTest.java` with 11 test cases:
+    - All 7 weekdays tested (Sunday-Saturday)
+    - Equal segment division verification
+    - Edge cases (very short day)
+    - Real-world sunrise/sunset times
+    - Boundary validation (within sunrise-sunset range)
+  - Updated `PanchangamIntegrationTest.java` - Fixed constructor with GowriCalculator
+  - **All 66 tests passing** ✅
+
+- [x] **iOS: Updated Models**
+  - `TimeRange.swift` - Added `gowriNallaNeram` case
+    - Tamil name: "கௌரி நல்ல நேரம்"
+    - Icon: "star.circle.fill"
+    - Marked as auspicious
+  - `PanchangamData.swift` - Added `gowriNallaNeram` field
+  - `APIResponse.swift` - Added parsing for `gowriNallaNeram`
+
+- [x] **iOS: Updated `DailyView.swift`**
+  - Added Gowri Nalla Neram display in auspicious times card
+  - Shows all Gowri periods with star icon
+  - Localized labels
+
+#### 3. Testing & Verification
+
+- [x] **Backend Tests**
+  ```
+  Tests run: 66, Failures: 0, Errors: 0, Skipped: 0
+  - GowriCalculatorTest: 11/11 passed
+  - PanchangamIntegrationTest: All passed
+  - Build: SUCCESS
+  ```
+
+- [x] **iOS Tests**
+  - All unit tests passing
+  - Build successful for iOS Simulator
+
+- [x] **API Verification**
+  - Tested `/api/panchangam/daily` endpoint
+  - Verified Gowri Nalla Neram returns 5 periods for Monday
+  - Confirmed JSON response structure
+
+- [x] **Simulator Testing**
+  - Built and ran app on iPhone 16 Pro simulator (iOS 18.2)
+  - Verified 2 Nalla Neram periods visible
+  - Verified Kuligai period visible
+  - Verified Rahukaalam is most prominent
+  - Verified Gowri periods display correctly
+  - Tamil localization working
+
+#### 4. Documentation Updates
+
+- [x] **Updated `CLAUDE.md`** (Root + Backend + iOS)
+  - Added comprehensive "Development Workflow for Major Changes" section
+  - 5-phase workflow: Planning → Testing → Documentation → Verification → Git
+  - Covers both frontend and backend
+  - Test commands for both platforms
+
+- [x] **Updated `backend/PROGRESS.md`**
+  - Session 3 entry documenting Gowri feature
+
+#### 5. Files Modified
+
+**New Files:**
+- `backend/src/main/java/com/magizh/calendar/service/GowriCalculator.java` (96 lines)
+- `backend/src/test/java/com/magizh/calendar/service/GowriCalculatorTest.java` (169 lines)
+
+**Modified Files (Backend):**
+- `backend/src/main/java/com/magizh/calendar/model/TimeRange.java`
+- `backend/src/main/java/com/magizh/calendar/model/Timings.java`
+- `backend/src/main/java/com/magizh/calendar/service/TimingsCalculator.java`
+- `backend/src/test/java/com/magizh/calendar/service/PanchangamIntegrationTest.java`
+
+**Modified Files (iOS):**
+- `ios/magizh-calendar-ios/Views/Daily/DailyView.swift` (lines 165-171, 531-810)
+- `ios/magizh-calendar-ios/Localization/Translations/UIStrings.swift`
+- `ios/magizh-calendar-ios/Models/TimeRange.swift`
+- `ios/magizh-calendar-ios/Models/PanchangamData.swift`
+- `ios/magizh-calendar-ios/Services/APIResponse.swift`
+
+#### 6. Success Criteria Met
+
+**Phase 1 Complete:**
+- ✅ 2nd Nalla Neram period now visible
+- ✅ Kuligai period now visible
+- ✅ Rahukaalam is most visually prominent (largest, red border/glow)
+- ✅ Time periods section moved to 2nd position
+- ✅ All new strings localized in Tamil
+
+**Phase 2 Complete:**
+- ✅ Gowri Nalla Neram calculated for all 7 weekdays
+- ✅ Backend tests pass (66/66)
+- ✅ iOS displays Gowri periods in auspicious card
+- ✅ Tamil localization works
+
+**Overall:**
+- ✅ Magizh now matches or exceeds Nila's time period features
+- ✅ Maintains Liquid Glass design aesthetic
+- ✅ All tests pass (backend + iOS)
+
+---
+
 ## Next Steps (Planned)
 
 ### Phase 1 - Core Features

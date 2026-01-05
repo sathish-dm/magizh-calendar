@@ -21,6 +21,12 @@ import java.util.List;
 @Service
 public class TimingsCalculator {
 
+    private final GowriCalculator gowriCalculator;
+
+    public TimingsCalculator(GowriCalculator gowriCalculator) {
+        this.gowriCalculator = gowriCalculator;
+    }
+
     // Rahukaalam segment for each day (1-8, where 1 is first segment after sunrise)
     // Traditional order: Sun=8, Mon=2, Tue=7, Wed=5, Thu=6, Fri=4, Sat=3
     private static final int[] RAHUKAALAM_SEGMENTS = {
@@ -97,7 +103,10 @@ public class TimingsCalculator {
         List<TimeRange> nallaNeram = calculateNallaNeram(sunrise, sunset, segmentDuration,
                 rahuSegment, yamaSegment, kuligaiSegment);
 
-        return new Timings(sunrise, sunset, nallaNeram, rahukaalam, yamagandam, kuligai);
+        // Calculate Gowri Nalla Neram
+        List<TimeRange> gowriNallaNeram = gowriCalculator.calculate(sunrise, sunset, dayOfWeek);
+
+        return new Timings(sunrise, sunset, nallaNeram, rahukaalam, yamagandam, kuligai, gowriNallaNeram);
     }
 
     private TimeRange calculateSegment(ZonedDateTime sunrise, Duration segmentDuration,

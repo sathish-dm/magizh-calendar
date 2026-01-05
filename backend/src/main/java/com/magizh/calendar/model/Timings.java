@@ -11,6 +11,7 @@ import java.util.List;
  * @param rahukaalam Inauspicious period ruled by Rahu
  * @param yamagandam Inauspicious period ruled by Yama
  * @param kuligai Inauspicious period (optional)
+ * @param gowriNallaNeram List of Gowri Panchangam auspicious periods
  */
 public record Timings(
     ZonedDateTime sunrise,
@@ -18,7 +19,8 @@ public record Timings(
     List<TimeRange> nallaNeram,
     TimeRange rahukaalam,
     TimeRange yamagandam,
-    TimeRange kuligai
+    TimeRange kuligai,
+    List<TimeRange> gowriNallaNeram
 ) {
     public static Timings sample(ZonedDateTime baseTime) {
         var sunrise = baseTime.withHour(6).withMinute(42);
@@ -56,7 +58,8 @@ public record Timings(
         return new Timings(
             sunrise, sunset,
             List.of(nallaNeram1, nallaNeram2),
-            rahukaalam, yamagandam, kuligai
+            rahukaalam, yamagandam, kuligai,
+            List.of()  // Empty Gowri for sample - will be calculated
         );
     }
 }

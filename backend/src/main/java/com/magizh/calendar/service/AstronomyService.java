@@ -26,6 +26,10 @@ public class AstronomyService {
         swissEph = new SwissEph();
         // Moshier mode is the automatic fallback when no ephemeris files are found
         // It provides sufficient accuracy for panchangam calculations
+
+        // CRITICAL: Set sidereal mode with Lahiri Ayanamsha for Tamil Panchangam
+        // This shifts calculations from tropical (Western) to sidereal (Indian) zodiac
+        swissEph.swe_set_sid_mode(SweConst.SE_SIDM_LAHIRI, 0, 0);
     }
 
     /**
@@ -175,17 +179,18 @@ public class AstronomyService {
         double[] result = new double[6];
         StringBuffer errorBuffer = new StringBuffer();
 
-        int flags = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_SPEED;
+        // Use SIDEREAL flag with Lahiri Ayanamsha (set in init())
+        int flags = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_SPEED | SweConst.SEFLG_SIDEREAL;
 
         int retval = swissEph.swe_calc_ut(julianDay, planet, flags, result, errorBuffer);
 
         if (retval < 0) {
             // Fallback to Moshier if Swiss Ephemeris fails
-            flags = SweConst.SEFLG_MOSEPH | SweConst.SEFLG_SPEED;
+            flags = SweConst.SEFLG_MOSEPH | SweConst.SEFLG_SPEED | SweConst.SEFLG_SIDEREAL;
             swissEph.swe_calc_ut(julianDay, planet, flags, result, errorBuffer);
         }
 
-        return result[0]; // Ecliptic longitude
+        return result[0]; // Sidereal ecliptic longitude
     }
 
     private ZonedDateTime calculateSunRiseSet(LocalDate date, double latitude, double longitude,

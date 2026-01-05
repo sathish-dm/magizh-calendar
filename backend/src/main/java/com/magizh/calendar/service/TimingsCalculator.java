@@ -123,32 +123,22 @@ public class TimingsCalculator {
                                                  int rahuSegment, int yamaSegment, int kuligaiSegment) {
         List<TimeRange> nallaNeram = new ArrayList<>();
 
-        // Find auspicious segments (those not occupied by inauspicious timings)
-        // Traditional Nalla Neram periods are specific times based on planetary hours
-        // For simplicity, we'll mark segments not occupied by Rahu/Yama/Kuligai as potentially auspicious
+        // Traditional Nalla Neram uses fixed 1-hour windows at auspicious times
+        // Morning: 10:30-11:30 AM, Afternoon: 4:30-5:30 PM
+        // These are shown even if there's minor overlap with inauspicious periods
+        // (traditional almanacs show these standard times)
 
-        // Common approach: Morning Nalla Neram (before Rahukaalam) and
-        // Afternoon Nalla Neram (after Rahukaalam ends if applicable)
+        // Morning Nalla Neram: 10:30-11:30 AM
+        ZonedDateTime morningStart = sunrise.withHour(10).withMinute(30).withSecond(0).withNano(0);
+        ZonedDateTime morningEnd = morningStart.plusHours(1);
+        nallaNeram.add(new TimeRange(morningStart, morningEnd, TimingType.NALLA_NERAM));
 
-        // Simple heuristic: First half of day and after sunset minus inauspicious periods
-        // For now, provide two standard auspicious periods
+        // Afternoon Nalla Neram: 4:30-5:30 PM
+        ZonedDateTime afternoonStart = sunrise.withHour(16).withMinute(30).withSecond(0).withNano(0);
+        ZonedDateTime afternoonEnd = afternoonStart.plusHours(1);
 
-        // Morning Nalla Neram: typically 9-10:30 AM equivalent
-        ZonedDateTime morningStart = sunrise.plusHours(2).plusMinutes(30);
-        ZonedDateTime morningEnd = morningStart.plusHours(1).plusMinutes(30);
-
-        // Check if this overlaps with any inauspicious period
-        if (!overlapsWithInauspicious(morningStart, morningEnd, sunrise, segmentDuration,
-                rahuSegment, yamaSegment, kuligaiSegment)) {
-            nallaNeram.add(new TimeRange(morningStart, morningEnd, TimingType.NALLA_NERAM));
-        }
-
-        // Afternoon Nalla Neram: typically 3-4:30 PM equivalent
-        ZonedDateTime afternoonStart = sunrise.plusHours(9);
-        ZonedDateTime afternoonEnd = afternoonStart.plusHours(1).plusMinutes(30);
-
-        if (afternoonEnd.isBefore(sunset) && !overlapsWithInauspicious(afternoonStart, afternoonEnd,
-                sunrise, segmentDuration, rahuSegment, yamaSegment, kuligaiSegment)) {
+        // Ensure it's before sunset
+        if (afternoonEnd.isBefore(sunset)) {
             nallaNeram.add(new TimeRange(afternoonStart, afternoonEnd, TimingType.NALLA_NERAM));
         }
 

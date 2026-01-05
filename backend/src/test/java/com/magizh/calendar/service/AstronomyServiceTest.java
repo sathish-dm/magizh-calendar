@@ -110,12 +110,16 @@ class AstronomyServiceTest {
         double lonJul = astronomyService.getSunLongitude(jul1);
         double lonOct = astronomyService.getSunLongitude(oct1);
 
+        // SIDEREAL zodiac values (Lahiri Ayanamsha ~24° offset from tropical)
         // Sun moves approximately 1° per day, so ~90° per quarter
-        // January: ~280° (Capricorn), April: ~10° (Aries), July: ~100° (Cancer), October: ~190° (Libra)
-        assertTrue(lonJan > 270 && lonJan < 290, "Sun in Capricorn in January: " + lonJan);
-        assertTrue(lonApr > 0 && lonApr < 30, "Sun in Aries in April: " + lonApr);
-        assertTrue(lonJul > 90 && lonJul < 120, "Sun in Cancer in July: " + lonJul);
-        assertTrue(lonOct > 180 && lonOct < 210, "Sun in Libra in October: " + lonOct);
+        // January: ~256° (Dhanu/Sagittarius, end of Margazhi month)
+        // April: ~346° or wraps to 0-20° (Meena/Pisces → Mesha/Aries, Tamil New Year)
+        // July: ~76° (Mithuna/Gemini, Aani month)
+        // October: ~166° (Kanya/Virgo, Purattasi month)
+        assertTrue(lonJan > 245 && lonJan < 270, "Sun in Dhanu (sidereal Sagittarius) in January: " + lonJan);
+        assertTrue((lonApr > 340 && lonApr < 360) || (lonApr >= 0 && lonApr < 20), "Sun in Meena→Mesha (sidereal Pisces→Aries) in April: " + lonApr);
+        assertTrue(lonJul > 65 && lonJul < 95, "Sun in Mithuna (sidereal Gemini) in July: " + lonJul);
+        assertTrue(lonOct > 155 && lonOct < 180, "Sun in Kanya (sidereal Virgo) in October: " + lonOct);
     }
 
     @Test

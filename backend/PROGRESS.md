@@ -238,6 +238,118 @@ Tests run: 66, Failures: 0, Errors: 0, Skipped: 0
 
 ---
 
+## Session 5 - January 11, 2026
+
+### Completed
+
+#### 1. API Security Implementation (Spring Security)
+
+**Objective**: Secure the API with API key authentication for iOS app and future web app.
+
+- [x] **Added Spring Security Dependency** (`pom.xml`)
+  - `spring-boot-starter-security`
+  - `spring-security-test` for testing
+
+#### 2. Security Configuration Files Created
+
+- [x] **`SecurityConfig.java`** - Spring Security configuration
+  - Disabled CSRF (stateless API)
+  - Stateless session management
+  - Public endpoints: `/api/panchangam/health`, `/swagger-ui/**`, `/actuator/health`
+  - All `/api/**` endpoints require authentication
+  - Integrates API key filter
+
+- [x] **`ApiKeyAuthenticationFilter.java`** - API key validation
+  - Validates `X-API-Key` header
+  - Supports multiple keys: iOS, Web, Dev
+  - Returns 401 for invalid/missing key
+  - Skips auth for public endpoints
+  - Logs client type from `X-Client-Type` header
+
+- [x] **`CorsConfig.java`** - CORS configuration
+  - Configurable allowed origins via environment
+  - Allows `X-API-Key` and `X-Client-Type` headers
+  - Exposed headers for rate limiting
+
+- [x] **`RateLimitingFilter.java`** - Rate limiting
+  - 60 requests/minute per client (by API key or IP)
+  - Returns 429 with `Retry-After` header when exceeded
+  - `X-Rate-Limit-Remaining` header in responses
+  - Configurable via environment variables
+
+#### 3. Configuration Updates
+
+- [x] **Updated `application.yml`** - Added security config section
+  ```yaml
+  api:
+    security:
+      enabled: ${API_SECURITY_ENABLED:true}
+      keys:
+        ios: ${API_KEY_IOS:}
+        web: ${API_KEY_WEB:}
+        dev: ${API_KEY_DEV:dev-key-for-local-testing}
+    cors:
+      allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
+    ratelimit:
+      enabled: ${RATE_LIMIT_ENABLED:true}
+      requests-per-minute: ${RATE_LIMIT_RPM:60}
+  ```
+
+- [x] **Created `application-dev.yml`** - Development profile
+  - Security disabled for local development
+  - All origins allowed
+
+- [x] **Created `application-prod.yml`** - Production profile
+  - Security enabled
+  - Strict CORS (specific origins only)
+  - Rate limiting enabled
+
+#### 4. Controller Updates
+
+- [x] **Updated `PanchangamController.java`**
+  - Removed `@CrossOrigin(origins = "*")` annotation
+  - CORS now handled by `CorsConfig.java`
+
+#### 5. Testing Results
+
+```
+Tests run: 66, Failures: 0, Errors: 0, Skipped: 0
+- All existing tests pass
+- Security filters integrated
+- Build: SUCCESS
+```
+
+#### 6. Manual Testing
+
+```bash
+# Without key - 401 Unauthorized
+curl http://localhost:8080/api/panchangam/daily?date=2026-01-10
+
+# With valid key - 200 OK
+curl -H "X-API-Key: dev-key-for-local-testing" \
+     "http://localhost:8080/api/panchangam/daily?date=2026-01-10"
+
+# Health endpoint - always works (no auth required)
+curl http://localhost:8080/api/panchangam/health
+```
+
+#### 7. Files Created
+
+**New Files:**
+- `src/main/java/com/magizh/calendar/config/SecurityConfig.java`
+- `src/main/java/com/magizh/calendar/config/ApiKeyAuthenticationFilter.java`
+- `src/main/java/com/magizh/calendar/config/CorsConfig.java`
+- `src/main/java/com/magizh/calendar/config/RateLimitingFilter.java`
+- `src/main/resources/application-dev.yml`
+- `src/main/resources/application-prod.yml`
+
+**Modified Files:**
+- `pom.xml` - Added Spring Security dependencies
+- `src/main/resources/application.yml` - Added security config
+- `src/main/java/com/magizh/calendar/controller/PanchangamController.java` - Removed @CrossOrigin
+
+---
+
 ## Next Steps (Planned)
 
 ### Phase 1 - Swiss Ephemeris Integration

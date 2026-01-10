@@ -426,6 +426,82 @@
 
 ---
 
+## Session 7 - January 11, 2026
+
+### Completed
+
+#### 1. API Security Integration (iOS Client)
+
+**Objective**: Update iOS app to authenticate with secured backend API.
+
+- [x] **Created `KeychainService.swift`** - Secure credential storage
+  - Actor-based service for thread safety
+  - Store/retrieve/delete API key from iOS Keychain
+  - Uses `kSecAttrAccessibleAfterFirstUnlock` for security
+  - Error handling with `KeychainError` enum
+
+- [x] **Created `APICredentials.swift`** - API key management
+  - `getAPIKey()` - Returns dev key (DEBUG) or Keychain key (RELEASE)
+  - `storeAPIKey()` - Saves production key to Keychain
+  - `hasAPIKey()` - Checks key availability
+  - `clientType` - Returns "ios" for server identification
+
+#### 2. PanchangamAPIService Updates
+
+- [x] **Updated `PanchangamAPIService.swift`**
+  - Added new `APIError` cases:
+    - `.unauthorized` - 401 response handling
+    - `.rateLimited` - 429 response handling
+    - `.missingAPIKey` - No key configured
+  - Added `cachedAPIKey` property for performance
+  - Added `addAuthenticationHeaders()` method
+    - Injects `X-API-Key` header
+    - Injects `X-Client-Type: ios` header
+  - Updated `performRequest()` to handle 401/429 responses
+
+#### 3. Error Messages
+
+| Error | Message |
+|-------|---------|
+| `.unauthorized` | "Authentication failed. Please restart the app." |
+| `.rateLimited` | "Too many requests. Please wait a moment." |
+| `.missingAPIKey` | "API key not configured." |
+
+#### 4. Development vs Production
+
+**DEBUG Mode:**
+- Uses bundled dev key: `dev-key-for-local-testing`
+- Allows requests without API key for flexibility
+
+**RELEASE Mode:**
+- Retrieves key from Keychain
+- Throws `.missingAPIKey` if not configured
+- Key will be set during app setup or from server
+
+#### 5. Testing Results
+
+```
+iOS Build: SUCCESS
+- All unit tests pass
+- API service builds without errors
+- Keychain operations verified
+```
+
+#### 6. Files Created
+
+**New Files:**
+- `Services/KeychainService.swift` (109 lines)
+- `Services/APICredentials.swift` (46 lines)
+
+**Modified Files:**
+- `Services/PanchangamAPIService.swift`
+  - Added error cases (lines 11-13, 30-34)
+  - Added `cachedAPIKey` property (line 69)
+  - Added `addAuthenticationHeaders()` method (lines 202-219)
+  - Updated `performRequest()` for auth errors (lines 183-192)
+
+---
+
 ## Next Steps (Planned)
 
 ### Phase 1 - Core Features

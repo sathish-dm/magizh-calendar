@@ -58,6 +58,49 @@ xcodebuild -scheme magizh-calendar-ios -sdk iphonesimulator build
 
 ### Example Request
 
+```bash
+# With API key (required in production)
+curl -H "X-API-Key: your-api-key" \
+     "http://localhost:8080/api/panchangam/daily?date=2026-01-03&lat=13.0827&lng=80.2707&timezone=Asia/Kolkata"
+
+# Health check (no auth required)
+curl http://localhost:8080/api/panchangam/health
 ```
-GET /api/panchangam/daily?date=2026-01-03&lat=13.0827&lng=80.2707&timezone=Asia/Kolkata
+
+## API Security
+
+The API uses API key authentication for secure access.
+
+### Headers
+
+| Header | Description | Required |
+|--------|-------------|----------|
+| `X-API-Key` | API key for authentication | Yes (except health) |
+| `X-Client-Type` | Client identifier (ios/web) | Optional |
+
+### Rate Limiting
+
+- 60 requests per minute per client
+- Returns `429 Too Many Requests` when exceeded
+- `Retry-After` header indicates wait time
+
+### Environment Configuration
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `API_KEY_IOS` | iOS app API key | - |
+| `API_KEY_WEB` | Web app API key | - |
+| `API_KEY_DEV` | Development key | `dev-key-for-local-testing` |
+| `API_SECURITY_ENABLED` | Enable/disable auth | `true` |
+| `CORS_ALLOWED_ORIGINS` | Allowed CORS origins | `*` |
+| `RATE_LIMIT_ENABLED` | Enable rate limiting | `true` |
+
+### Profiles
+
+```bash
+# Development (security disabled)
+mvn spring-boot:run -Dspring.profiles.active=dev
+
+# Production (full security)
+mvn spring-boot:run -Dspring.profiles.active=prod
 ```

@@ -63,6 +63,19 @@ public class TimingsCalculator {
         1  // Saturday
     };
 
+    // Traditional Nalla Neram patterns for each weekday
+    // Format: {morningStartHour, morningStartMin, morningEndHour, morningEndMin,
+    //          eveningStartHour, eveningStartMin, eveningEndHour, eveningEndMin}
+    private static final int[][] NALLA_NERAM_PATTERNS = {
+        {7, 30, 9, 0, 15, 0, 16, 30},    // Sunday
+        {6, 0, 7, 30, 15, 0, 16, 30},    // Monday
+        {6, 0, 7, 30, 15, 0, 16, 30},    // Tuesday
+        {10, 30, 12, 0, 15, 0, 16, 30},  // Wednesday
+        {7, 30, 9, 0, 13, 30, 15, 0},    // Thursday
+        {7, 30, 9, 0, 10, 30, 12, 0},    // Friday
+        {7, 30, 9, 0, 16, 30, 18, 0}     // Saturday
+    };
+
     /**
      * Calculate all timings for a given day.
      *
@@ -99,8 +112,8 @@ public class TimingsCalculator {
         int kuligaiSegment = KULIGAI_SEGMENTS[dayIndex];
         TimeRange kuligai = calculateSegment(sunrise, segmentDuration, kuligaiSegment, TimingType.KULIGAI);
 
-        // Calculate Nalla Neram (auspicious periods)
-        List<TimeRange> nallaNeram = calculateNallaNeram(sunrise, sunset, segmentDuration,
+        // Calculate Nalla Neram (auspicious periods based on weekday)
+        List<TimeRange> nallaNeram = calculateNallaNeram(sunrise, sunset, segmentDuration, dayOfWeek,
                 rahuSegment, yamaSegment, kuligaiSegment);
 
         // Calculate Gowri Nalla Neram
@@ -119,27 +132,41 @@ public class TimingsCalculator {
     }
 
     private List<TimeRange> calculateNallaNeram(ZonedDateTime sunrise, ZonedDateTime sunset,
-                                                 Duration segmentDuration,
+                                                 Duration segmentDuration, DayOfWeek dayOfWeek,
                                                  int rahuSegment, int yamaSegment, int kuligaiSegment) {
         List<TimeRange> nallaNeram = new ArrayList<>();
 
-        // Traditional Nalla Neram uses fixed 1-hour windows at auspicious times
-        // Morning: 10:30-11:30 AM, Afternoon: 4:30-5:30 PM
-        // These are shown even if there's minor overlap with inauspicious periods
-        // (traditional almanacs show these standard times)
+        // Get day index (Sunday=0, Monday=1, ..., Saturday=6)
+        int dayIndex = (dayOfWeek.getValue() % 7);
 
-        // Morning Nalla Neram: 10:30-11:30 AM
-        ZonedDateTime morningStart = sunrise.withHour(10).withMinute(30).withSecond(0).withNano(0);
-        ZonedDateTime morningEnd = morningStart.plusHours(1);
-        nallaNeram.add(new TimeRange(morningStart, morningEnd, TimingType.NALLA_NERAM));
+        // Get Nalla Neram pattern for this weekday
+        int[] pattern = NALLA_NERAM_PATTERNS[dayIndex];
 
-        // Afternoon Nalla Neram: 4:30-5:30 PM
-        ZonedDateTime afternoonStart = sunrise.withHour(16).withMinute(30).withSecond(0).withNano(0);
-        ZonedDateTime afternoonEnd = afternoonStart.plusHours(1);
+        // Morning Nalla Neram
+        ZonedDateTime morningStart = sunrise.withHour(pattern[0]).withMinute(pattern[1]).withSecond(0).withNano(0);
+        ZonedDateTime morningEnd = sunrise.withHour(pattern[2]).withMinute(pattern[3]).withSecond(0).withNano(0);
 
-        // Ensure it's before sunset
-        if (afternoonEnd.isBefore(sunset)) {
-            nallaNeram.add(new TimeRange(afternoonStart, afternoonEnd, TimingType.NALLA_NERAM));
+        // Ensure morning period is after sunrise and before sunset
+        if (morningStart.isBefore(sunrise)) {
+            morningStart = sunrise;
+        }
+        if (morningEnd.isAfter(sunset)) {
+            morningEnd = sunset;
+        }
+        if (morningStart.isBefore(morningEnd)) {
+            nallaNeram.add(new TimeRange(morningStart, morningEnd, TimingType.NALLA_NERAM));
+        }
+
+        // Evening Nalla Neram
+        ZonedDateTime eveningStart = sunrise.withHour(pattern[4]).withMinute(pattern[5]).withSecond(0).withNano(0);
+        ZonedDateTime eveningEnd = sunrise.withHour(pattern[6]).withMinute(pattern[7]).withSecond(0).withNano(0);
+
+        // Ensure evening period is before sunset
+        if (eveningEnd.isAfter(sunset)) {
+            eveningEnd = sunset;
+        }
+        if (eveningStart.isBefore(eveningEnd)) {
+            nallaNeram.add(new TimeRange(eveningStart, eveningEnd, TimingType.NALLA_NERAM));
         }
 
         return nallaNeram;

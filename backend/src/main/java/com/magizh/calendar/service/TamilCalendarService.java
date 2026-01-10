@@ -136,12 +136,15 @@ public class TamilCalendarService {
         int year = date.getYear();
         LocalDate monthStart;
 
-        if (date.getMonthValue() < startMonth ||
-            (date.getMonthValue() == startMonth && date.getDayOfMonth() < startDay)) {
-            // Month started in previous Gregorian year (for months like Thai, Maasi, Panguni)
-            if (monthIndex >= 9) { // Thai (Jan), Maasi (Feb), Panguni (Mar)
-                year = date.getYear();
-            }
+        // Handle Tamil months that cross Gregorian year boundary
+        // Margazhi (Dec-Jan), Thai (Jan-Feb), Maasi (Feb-Mar), Panguni (Mar-Apr)
+        // If we're in early months of Gregorian year but the Tamil month started in previous year
+        if (startMonth > date.getMonthValue()) {
+            // Tamil month started in the previous Gregorian year
+            year = date.getYear() - 1;
+        } else if (startMonth == date.getMonthValue() && startDay > date.getDayOfMonth()) {
+            // Same month but Tamil month hasn't started yet - use previous year's start
+            year = date.getYear() - 1;
         }
 
         try {
@@ -166,24 +169,25 @@ public class TamilCalendarService {
 
     /**
      * Calculate the Tamil year name from the 60-year cycle.
-     * The cycle started in 3102 BCE (Kali Yuga).
+     * Uses the South Indian (Tamil) cycle where 1987 CE = Prabhava (year 1).
      */
     private String calculateYearName(LocalDate date) {
         // Tamil New Year is typically April 14
         int year = date.getYear();
         int month = date.getMonthValue();
 
-        // If before Tamil New Year (April 14), use previous year
+        // If before Tamil New Year (April 14), use previous Tamil year
         if (month < 4 || (month == 4 && date.getDayOfMonth() < 14)) {
             year--;
         }
 
         // Calculate position in 60-year cycle
-        // Kali Yuga started in 3102 BCE, and year 1 of the cycle was Prabhava
-        // Current calculation based on CE years
-        // Year 2000 CE was approximately "Vikruti" (year 24 in cycle)
-        int kaliYears = year + 3102; // Years since Kali Yuga
-        int cyclePosition = (kaliYears - 1) % 60;
+        // South Indian (Tamil) cycle: 1987 CE = Prabhava (year 1, index 0)
+        // This follows the Brihaspatya (Jupiter) cycle used in Tamil Nadu
+        int cyclePosition = (year - 1987) % 60;
+        if (cyclePosition < 0) {
+            cyclePosition += 60;
+        }
 
         return YEAR_NAMES[cyclePosition];
     }

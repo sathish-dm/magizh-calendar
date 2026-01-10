@@ -8,6 +8,9 @@ enum APIError: Error, LocalizedError, Sendable {
     case httpError(statusCode: Int)
     case decodingError(Error)
     case serverUnavailable
+    case unauthorized
+    case rateLimited
+    case missingAPIKey
 
     var errorDescription: String? {
         switch self {
@@ -23,6 +26,12 @@ enum APIError: Error, LocalizedError, Sendable {
             return "Failed to parse response: \(error.localizedDescription)"
         case .serverUnavailable:
             return "Server is unavailable. Please try again later."
+        case .unauthorized:
+            return "Authentication failed. Please restart the app."
+        case .rateLimited:
+            return "Too many requests. Please wait a moment."
+        case .missingAPIKey:
+            return "API key not configured."
         }
     }
 }
@@ -57,6 +66,7 @@ actor PanchangamAPIService {
 
     private let session: URLSession
     private let decoder: JSONDecoder
+    private var cachedAPIKey: String?
 
     // MARK: - Initialization
 
@@ -144,7 +154,10 @@ actor PanchangamAPIService {
     // MARK: - Private Methods
 
     private func performRequest<T: Decodable>(url: URL) async throws -> T {
-        let request = URLRequest(url: url)
+        var request = URLRequest(url: url)
+
+        // Add authentication headers
+        try await addAuthenticationHeaders(to: &request)
 
         let data: Data
         let response: URLResponse
@@ -166,7 +179,15 @@ actor PanchangamAPIService {
             throw APIError.invalidResponse
         }
 
-        guard (200...299).contains(httpResponse.statusCode) else {
+        // Handle auth-specific error codes
+        switch httpResponse.statusCode {
+        case 200...299:
+            break // Success, continue
+        case 401:
+            throw APIError.unauthorized
+        case 429:
+            throw APIError.rateLimited
+        default:
             throw APIError.httpError(statusCode: httpResponse.statusCode)
         }
 
@@ -175,6 +196,26 @@ actor PanchangamAPIService {
         } catch {
             throw APIError.decodingError(error)
         }
+    }
+
+    /// Add authentication headers to request
+    private func addAuthenticationHeaders(to request: inout URLRequest) async throws {
+        // Get cached key or fetch from APICredentials
+        if cachedAPIKey == nil {
+            cachedAPIKey = await APICredentials.getAPIKey()
+        }
+
+        guard let apiKey = cachedAPIKey else {
+            #if DEBUG
+            // Allow requests without API key in debug mode for flexibility
+            return
+            #else
+            throw APIError.missingAPIKey
+            #endif
+        }
+
+        request.setValue(apiKey, forHTTPHeaderField: "X-API-Key")
+        request.setValue(APICredentials.clientType, forHTTPHeaderField: "X-Client-Type")
     }
 
     private func formatDate(_ date: Date) -> String {

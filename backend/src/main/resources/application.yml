@@ -8,11 +8,22 @@ spring:
     virtual:
       enabled: true
 
-# CORS Configuration
-  web:
-    cors:
-      allowed-origins: "*"
-      allowed-methods: GET, POST, OPTIONS
+# API Security Configuration
+api:
+  security:
+    enabled: ${API_SECURITY_ENABLED:true}
+    keys:
+      ios: ${API_KEY_IOS:}
+      web: ${API_KEY_WEB:}
+      dev: ${API_KEY_DEV:dev-key-for-local-testing}
+
+  cors:
+    # Comma-separated list of allowed origins
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
+
+  ratelimit:
+    enabled: ${RATE_LIMIT_ENABLED:true}
+    requests-per-minute: ${RATE_LIMIT_RPM:60}
 
 # Swiss Ephemeris Configuration
 swisseph:

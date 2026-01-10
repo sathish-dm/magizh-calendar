@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/panchangam")
 @Validated
-@CrossOrigin(origins = "*")
 @Tag(name = "Panchangam", description = "Tamil Panchangam Calendar API")
 public class PanchangamController {
 

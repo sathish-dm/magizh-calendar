@@ -1,0 +1,13 @@
+# Development profile - Security disabled for local testing
+api:
+  security:
+    enabled: false
+  ratelimit:
+    enabled: false
+  cors:
+    allowed-origins: "*"
+
+logging:
+  level:
+    com.magizh: DEBUG
+    org.springframework.security: DEBUG

@@ -16,13 +16,14 @@ public class NakshatramCalculator {
 
     private static final double NAKSHATRAM_SPAN = 360.0 / 27.0; // 13°20' = 13.333...°
 
+    // Tamil names for nakshatrams (matching iOS enum)
     private static final String[] NAKSHATRAMS = {
-        "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira",
-        "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha",
-        "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati",
-        "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha",
-        "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha",
-        "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+        "Ashwini", "Bharani", "Krithigai", "Rohini", "Mrigashirisham",
+        "Thiruvathirai", "Punarpoosam", "Poosam", "Ayilyam", "Magam",
+        "Pooram", "Uthiram", "Hastham", "Chithirai", "Swathi",
+        "Visagam", "Anusham", "Kettai", "Moolam", "Pooradam",
+        "Uthiradam", "Thiruvonam", "Avittam", "Sathayam",
+        "Poorattathi", "Uthirattathi", "Revathi"
     };
 
     // Lords (ruling planets) for each nakshatram

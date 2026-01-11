@@ -205,13 +205,14 @@ class PanchangamIntegrationTest {
     @Test
     @DisplayName("Nakshatram is one of 27 valid names")
     void testValidNakshatram() {
+        // Tamil names for nakshatrams
         String[] validNakshatrams = {
-                "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira",
-                "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha",
-                "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati",
-                "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha",
-                "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha",
-                "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+                "Ashwini", "Bharani", "Krithigai", "Rohini", "Mrigashirisham",
+                "Thiruvathirai", "Punarpoosam", "Poosam", "Ayilyam", "Magam",
+                "Pooram", "Uthiram", "Hastham", "Chithirai", "Swathi",
+                "Visagam", "Anusham", "Kettai", "Moolam", "Pooradam",
+                "Uthiradam", "Thiruvonam", "Avittam", "Sathayam",
+                "Poorattathi", "Uthirattathi", "Revathi"
         };
 
         LocalDate date = LocalDate.of(2026, 1, 4);

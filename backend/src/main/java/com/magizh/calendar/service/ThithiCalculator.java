@@ -18,12 +18,12 @@ public class ThithiCalculator {
 
     private static final double THITHI_SPAN = 12.0; // Each thithi = 12°
 
-    // Thithi names (1-15, same for both pakshas)
+    // Thithi names (matching iOS enum)
     private static final String[] THITHI_NAMES = {
-        "Prathamai", "Dvitiyai", "Tritiyai", "Chaturthi", "Panchami",
-        "Shashti", "Saptami", "Ashtami", "Navami", "Dasami",
+        "Prathama", "Dvitiya", "Tritiya", "Chaturthi", "Panchami",
+        "Sashti", "Saptami", "Ashtami", "Navami", "Dasami",
         "Ekadasi", "Dvadasi", "Trayodasi", "Chaturdasi", "Pournami" // Shukla ends with Pournami
-        // Krishna paksha ends with Amavasya
+        // Krishna paksha ends with Amavasai
     };
 
     private final AstronomyService astronomyService;
@@ -62,7 +62,7 @@ public class ThithiCalculator {
             paksha = Paksha.KRISHNA;
             int krishnaThithi = thithiNumber - 15;
             if (krishnaThithi == 15) {
-                name = "Amavasya"; // New Moon
+                name = "Amavasai"; // New Moon
             } else {
                 name = THITHI_NAMES[krishnaThithi - 1];
             }

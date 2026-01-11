@@ -18,12 +18,13 @@ public class YogamCalculator {
 
     private static final double YOGAM_SPAN = 360.0 / 27.0; // 13°20'
 
+    // Yogam names (matching iOS enum)
     private static final String[] YOGAMS = {
-        "Vishkumbha", "Priti", "Ayushman", "Saubhagya", "Shobhana",
-        "Atiganda", "Sukarma", "Dhriti", "Shula", "Ganda",
-        "Vriddhi", "Dhruva", "Vyaghata", "Harshana", "Vajra",
-        "Siddhi", "Vyatipata", "Variyana", "Parigha", "Shiva",
-        "Siddha", "Sadhya", "Shubha", "Shukla", "Brahma",
+        "Vishkumbham", "Priti", "Ayushman", "Saubhagya", "Sobhanam",
+        "Atiganda", "Sukarma", "Dhriti", "Soola", "Ganda",
+        "Vriddhi", "Dhruva", "Vyagatha", "Harshana", "Vajra",
+        "Siddhi", "Vyatipata", "Variyan", "Parigha", "Siva",
+        "Siddha", "Sadhya", "Subha", "Sukla", "Brahma",
         "Indra", "Vaidhriti"
     };
 

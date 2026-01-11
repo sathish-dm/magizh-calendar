@@ -41,14 +41,14 @@ class NakshatramCalculatorTest {
     @Test
     @DisplayName("All 27 nakshatrams are correctly indexed")
     void testNakshatramIndexing() {
-        // Test boundary cases for each nakshatram
+        // Test boundary cases for each nakshatram (Tamil names)
         String[] expectedNakshatrams = {
-            "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira",
-            "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha",
-            "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati",
-            "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha",
-            "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha",
-            "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+            "Ashwini", "Bharani", "Krithigai", "Rohini", "Mrigashirisham",
+            "Thiruvathirai", "Punarpoosam", "Poosam", "Ayilyam", "Magam",
+            "Pooram", "Uthiram", "Hastham", "Chithirai", "Swathi",
+            "Visagam", "Anusham", "Kettai", "Moolam", "Pooradam",
+            "Uthiradam", "Thiruvonam", "Avittam", "Sathayam",
+            "Poorattathi", "Uthirattathi", "Revathi"
         };
 
         double span = 360.0 / 27.0; // 13.333°
@@ -64,12 +64,12 @@ class NakshatramCalculatorTest {
     @ParameterizedTest
     @DisplayName("Nakshatram boundaries are correct")
     @CsvSource({
-        "0.0, Ashwini",     // Start of Ashwini
-        "13.32, Ashwini",   // End of Ashwini
-        "13.34, Bharani",   // Start of Bharani
-        "26.66, Bharani",   // End of Bharani
-        "180.0, Chitra",    // Middle of zodiac
-        "359.9, Revati"     // End of Revati
+        "0.0, Ashwini",       // Start of Ashwini
+        "13.32, Ashwini",     // End of Ashwini
+        "13.34, Bharani",     // Start of Bharani
+        "26.66, Bharani",     // End of Bharani
+        "180.0, Chithirai",   // Middle of zodiac (Tamil name)
+        "359.9, Revathi"      // End of Revathi (Tamil name)
     })
     void testNakshatramBoundaries(double longitude, String expectedNakshatram) {
         String actual = nakshatramCalculator.getNakshatramName(longitude);

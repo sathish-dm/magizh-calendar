@@ -25,9 +25,9 @@ public class KaranamCalculator {
         "Bava", "Balava", "Kaulava", "Taitila", "Gara", "Vanija", "Vishti"
     };
 
-    // The 4 fixed karanams (sthira karanams)
+    // The 4 fixed karanams (sthira karanams) - matching iOS enum
     private static final String[] FIXED_KARANAMS = {
-        "Shakuni", "Chatushpada", "Naga", "Kimstughna"
+        "Sakuni", "Chatushpada", "Naga", "Kimstughna"
     };
 
     private final AstronomyService astronomyService;

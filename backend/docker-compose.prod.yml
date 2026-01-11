@@ -28,13 +28,9 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    networks:
+      - proxy
 
-  # Cloudflare Tunnel (optional - for public access without port forwarding)
-  # Uncomment if you want to use Cloudflare Tunnel
-  # tunnel:
-  #   image: cloudflare/cloudflared:latest
-  #   container_name: magizh-tunnel
-  #   command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - api
+networks:
+  proxy:
+    external: true

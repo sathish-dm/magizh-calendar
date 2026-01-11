@@ -25,11 +25,17 @@ struct Thithi: Codable, Identifiable, Equatable {
         "\(paksha.rawValue) \(name.tamilName)"
     }
 
-    /// Formatted end time string
+    /// Formatted end time string (device timezone)
     var endTimeFormatted: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "h:mm a"
         return formatter.string(from: endTime)
+    }
+
+    /// Formatted end time with timezone conversion based on settings
+    @MainActor
+    func endTimeForDisplay(locationTimezone: TimeZone) -> String {
+        TimezoneConversionService.shared.formatTime(endTime, locationTimezone: locationTimezone)
     }
 
     /// Whether this Thithi is considered auspicious

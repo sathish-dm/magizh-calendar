@@ -3,6 +3,7 @@ import SwiftUI
 /// Compact Gowri Nalla Neram card showing all 5 periods
 struct GowriBentoCard: View {
     let times: [TimeRange]
+    let locationTimezone: TimeZone
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
@@ -32,7 +33,7 @@ struct GowriBentoCard: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: Spacing.sm) {
                     ForEach(times) { time in
-                        Text(time.formatted)
+                        Text(time.formattedForDisplay(locationTimezone: locationTimezone))
                             .font(.caption)
                             .fontWeight(.medium)
                             .foregroundStyle(time.isCurrentlyActive ? .white : .primary)

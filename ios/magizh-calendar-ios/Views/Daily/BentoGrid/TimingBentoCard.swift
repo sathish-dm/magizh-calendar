@@ -3,6 +3,7 @@ import SwiftUI
 /// Nalla Neram card showing auspicious times
 struct NallaNeramBentoCard: View {
     let times: [TimeRange]
+    let locationTimezone: TimeZone
     @ObservedObject var localization = LocalizationService.shared
 
     var body: some View {
@@ -24,7 +25,7 @@ struct NallaNeramBentoCard: View {
                         Text(index == 0 ? localization.string(.morning) : localization.string(.afternoon))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
-                        Text(time.formatted)
+                        Text(time.formattedForDisplay(locationTimezone: locationTimezone))
                             .font(.subheadline)
                             .fontWeight(.bold)
                             .foregroundStyle(time.isCurrentlyActive ? .green : .primary)
@@ -48,6 +49,7 @@ struct AvoidTimesBentoCard: View {
     let rahukaalam: TimeRange
     let yamagandam: TimeRange
     let kuligai: TimeRange?
+    let locationTimezone: TimeZone
     @ObservedObject var localization = LocalizationService.shared
 
     var body: some View {
@@ -67,7 +69,7 @@ struct AvoidTimesBentoCard: View {
                 Text(localization.string(.rahukaalam))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
-                Text(rahukaalam.formatted)
+                Text(rahukaalam.formattedForDisplay(locationTimezone: locationTimezone))
                     .font(.subheadline)
                     .fontWeight(.bold)
                     .foregroundStyle(rahukaalam.isCurrentlyActive ? .red : .primary)
@@ -78,7 +80,7 @@ struct AvoidTimesBentoCard: View {
                 Text(localization.string(.yamagandam))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
-                Text(yamagandam.formatted)
+                Text(yamagandam.formattedForDisplay(locationTimezone: locationTimezone))
                     .font(.subheadline)
                     .fontWeight(.bold)
                     .foregroundStyle(yamagandam.isCurrentlyActive ? .orange : .primary)

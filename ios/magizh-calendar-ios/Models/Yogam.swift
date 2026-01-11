@@ -33,11 +33,21 @@ struct Yogam: Codable, Identifiable, Equatable {
         endTime.timeIntervalSince(startTime)
     }
 
-    /// Formatted time range string
+    /// Formatted time range string (device timezone)
     var timeRangeFormatted: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "h:mm a"
         return "\(formatter.string(from: startTime)) - \(formatter.string(from: endTime))"
+    }
+
+    /// Formatted time range with timezone conversion based on settings
+    @MainActor
+    func timeRangeForDisplay(locationTimezone: TimeZone) -> String {
+        TimezoneConversionService.shared.formatTimeRange(
+            start: startTime,
+            end: endTime,
+            locationTimezone: locationTimezone
+        )
     }
 
     /// Whether currently active

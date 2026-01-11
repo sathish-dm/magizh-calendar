@@ -197,6 +197,15 @@ class DailyViewModel: ObservableObject {
                 self?.loadPanchangamData()
             }
             .store(in: &cancellables)
+
+        // Observe changes to default location in settings
+        SettingsService.shared.$defaultLocation
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] newLocation in
+                self?.currentLocation = newLocation
+            }
+            .store(in: &cancellables)
     }
 
     /// Create mock panchangam data for a given date and location

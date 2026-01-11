@@ -54,6 +54,16 @@ struct TimeRange: Codable, Identifiable, Equatable {
         return "\(formatter.string(from: startTime)) - \(formatter.string(from: endTime))"
     }
 
+    /// Formatted time range with timezone conversion based on settings
+    @MainActor
+    func formattedForDisplay(locationTimezone: TimeZone) -> String {
+        TimezoneConversionService.shared.formatTimeRange(
+            start: startTime,
+            end: endTime,
+            locationTimezone: locationTimezone
+        )
+    }
+
     /// Check if a given time falls within this range
     func contains(_ date: Date) -> Bool {
         date >= startTime && date <= endTime

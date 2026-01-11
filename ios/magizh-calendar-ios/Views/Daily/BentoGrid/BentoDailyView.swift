@@ -15,6 +15,11 @@ struct BentoDailyView: View {
         GridItem(.flexible(), spacing: Spacing.md)
     ]
 
+    /// Location's timezone for time display
+    private var locationTimezone: TimeZone {
+        location.timeZone ?? TimeZone.current
+    }
+
     var body: some View {
         VStack(spacing: Spacing.md) {
             // Row 1: Hero Card (full width)
@@ -22,18 +27,19 @@ struct BentoDailyView: View {
 
             // Row 2: Nalla Neram + Avoid Times (side by side)
             HStack(spacing: Spacing.md) {
-                NallaNeramBentoCard(times: data.nallaNeram)
+                NallaNeramBentoCard(times: data.nallaNeram, locationTimezone: locationTimezone)
                 AvoidTimesBentoCard(
                     rahukaalam: data.rahukaalam,
                     yamagandam: data.yamagandam,
-                    kuligai: data.kuligai
+                    kuligai: data.kuligai,
+                    locationTimezone: locationTimezone
                 )
             }
             .frame(height: 150)
 
             // Row 3: Gowri Nalla Neram (full width, compact)
             if !data.gowriNallaNeram.isEmpty {
-                GowriBentoCard(times: data.gowriNallaNeram)
+                GowriBentoCard(times: data.gowriNallaNeram, locationTimezone: locationTimezone)
             }
 
             // Row 4: Four small angam cards (2x2)
@@ -41,7 +47,7 @@ struct BentoDailyView: View {
                 AngamBentoCard(
                     type: .nakshatram,
                     value: data.nakshatram.name.localizedName,
-                    endTime: "Ends \(data.nakshatram.endTimeFormatted)",
+                    endTime: "Ends \(data.nakshatram.endTimeForDisplay(locationTimezone: locationTimezone))",
                     accentColor: .purple
                 )
                 AngamBentoCard(
@@ -62,7 +68,8 @@ struct BentoDailyView: View {
                 )
                 SunTimeBentoCard(
                     sunrise: data.sunrise,
-                    sunset: data.sunset
+                    sunset: data.sunset,
+                    locationTimezone: locationTimezone
                 )
             }
             .frame(height: 100)
@@ -72,7 +79,7 @@ struct BentoDailyView: View {
                 AngamBentoCard(
                     type: .karanam,
                     value: data.karanam.name.localizedName,
-                    endTime: "Ends \(data.karanam.endTimeFormatted)",
+                    endTime: "Ends \(data.karanam.endTimeForDisplay(locationTimezone: locationTimezone))",
                     accentColor: .indigo
                 )
                 CurrentStatusBentoCard(data: data)

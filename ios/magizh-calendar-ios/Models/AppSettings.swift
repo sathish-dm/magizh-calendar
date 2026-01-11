@@ -79,6 +79,30 @@ enum AppTheme: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - Timezone Display Mode
+
+/// Controls how times are displayed relative to timezones
+enum TimezoneDisplayMode: String, Codable, CaseIterable, Identifiable {
+    case original = "original"   // Show times in panchangam location's timezone (default)
+    case device = "device"       // Convert and show times in device's local timezone
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .original: return "Location Timezone"
+        case .device: return "My Device Timezone"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .original: return "Times shown in the selected location's timezone"
+        case .device: return "Times converted to your device's timezone"
+        }
+    }
+}
+
 // MARK: - RawRepresentable Extensions for @AppStorage
 
 extension TimeFormat: RawRepresentable {
@@ -108,6 +132,16 @@ extension AppTheme: RawRepresentable {
         case "system": self = .system
         case "light": self = .light
         case "dark": self = .dark
+        default: return nil
+        }
+    }
+}
+
+extension TimezoneDisplayMode: RawRepresentable {
+    init?(rawValue: String) {
+        switch rawValue {
+        case "original": self = .original
+        case "device": self = .device
         default: return nil
         }
     }

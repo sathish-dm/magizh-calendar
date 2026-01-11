@@ -22,6 +22,7 @@ final class SettingsService: ObservableObject {
         static let favoriteLocations = "favoriteLocations"
         static let lastViewedDate = "lastViewedDate"
         static let isVegetarian = "isVegetarian"
+        static let timezoneDisplayMode = "timezoneDisplayMode"
     }
 
     // MARK: - Published Properties
@@ -52,6 +53,16 @@ final class SettingsService: ObservableObject {
     /// When true, hides non-veg related food alerts (user is vegetarian)
     @Published var isVegetarian: Bool {
         didSet { UserDefaults.standard.set(isVegetarian, forKey: Keys.isVegetarian) }
+    }
+
+    /// Controls whether times are shown in location's timezone or device's timezone
+    @Published var timezoneDisplayMode: TimezoneDisplayMode {
+        didSet { UserDefaults.standard.set(timezoneDisplayMode.rawValue, forKey: Keys.timezoneDisplayMode) }
+    }
+
+    /// Returns the device's current timezone
+    var deviceTimezone: TimeZone {
+        TimeZone.current
     }
 
     @Published var defaultLocation: Location {
@@ -116,6 +127,14 @@ final class SettingsService: ObservableObject {
 
         // Load vegetarian preference
         self.isVegetarian = UserDefaults.standard.bool(forKey: Keys.isVegetarian)
+
+        // Load timezone display mode
+        if let rawValue = UserDefaults.standard.string(forKey: Keys.timezoneDisplayMode),
+           let mode = TimezoneDisplayMode(rawValue: rawValue) {
+            self.timezoneDisplayMode = mode
+        } else {
+            self.timezoneDisplayMode = .original
+        }
 
         // Load default location
         if let data = UserDefaults.standard.data(forKey: Keys.defaultLocation),
@@ -193,6 +212,7 @@ final class SettingsService: ObservableObject {
         language = .english
         notificationsEnabled = false
         isVegetarian = false
+        timezoneDisplayMode = .original
         favoriteLocations = []
     }
 }

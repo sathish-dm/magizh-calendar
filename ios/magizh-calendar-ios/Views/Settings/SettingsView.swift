@@ -4,6 +4,7 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject private var settings = SettingsService.shared
     @Environment(\.dismiss) private var dismiss
+    @State private var showingLocationSearch = false
 
     var body: some View {
         NavigationStack {
@@ -23,6 +24,13 @@ struct SettingsView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
                         dismiss()
+                    }
+                }
+            }
+            .sheet(isPresented: $showingLocationSearch) {
+                NavigationStack {
+                    LocationSearchView(mode: .setDefault) { _ in
+                        showingLocationSearch = false
                     }
                 }
             }
@@ -56,10 +64,19 @@ struct SettingsView: View {
 
     private var locationSection: some View {
         Section {
-            // Default Location Picker
-            Picker("Default Location", selection: $settings.defaultLocation) {
-                ForEach(Location.popularLocations) { location in
-                    Text(location.displayName).tag(location)
+            // Default Location - Search (opens as sheet)
+            Button {
+                showingLocationSearch = true
+            } label: {
+                HStack {
+                    Text("Default Location")
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    Text(settings.defaultLocation.shortDisplayName)
+                        .foregroundStyle(.secondary)
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                 }
             }
 
@@ -77,7 +94,7 @@ struct SettingsView: View {
         } header: {
             Text("Location")
         } footer: {
-            Text("Default location is used for panchangam calculations when the app opens.")
+            Text("Search any city worldwide. Timezone is automatically detected.")
         }
     }
 
@@ -99,6 +116,13 @@ struct SettingsView: View {
                 }
             }
 
+            // Timezone Display
+            Picker("Timezone Display", selection: $settings.timezoneDisplayMode) {
+                ForEach(TimezoneDisplayMode.allCases) { mode in
+                    Text(mode.displayName).tag(mode)
+                }
+            }
+
             // Theme
             Picker("Theme", selection: $settings.theme) {
                 ForEach(AppTheme.allCases) { theme in
@@ -107,6 +131,8 @@ struct SettingsView: View {
             }
         } header: {
             Text("Display")
+        } footer: {
+            Text(settings.timezoneDisplayMode.description)
         }
     }
 
@@ -237,58 +263,9 @@ struct FavoriteLocationsView: View {
 // MARK: - Add Favorite Location View
 
 struct AddFavoriteLocationView: View {
-    @ObservedObject private var settings = SettingsService.shared
-    @Environment(\.dismiss) private var dismiss
-
-    var availableLocations: [Location] {
-        Location.popularLocations.filter { location in
-            !settings.favoriteLocations.contains(where: { $0.id == location.id })
-        }
-    }
-
     var body: some View {
         NavigationStack {
-            List {
-                if availableLocations.isEmpty {
-                    ContentUnavailableView(
-                        "All Added",
-                        systemImage: "checkmark.circle",
-                        description: Text("All available locations are in your favorites")
-                    )
-                } else {
-                    ForEach(availableLocations) { location in
-                        Button {
-                            settings.addFavorite(location)
-                            dismiss()
-                        } label: {
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(location.name)
-                                        .font(.headline)
-                                    Text("\(location.city), \(location.country)")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                                Image(systemName: "plus.circle")
-                                    .foregroundStyle(.blue)
-                            }
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-            }
-            .navigationTitle("Add Location")
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-            #endif
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
+            LocationSearchView(mode: .addFavorite)
         }
     }
 }

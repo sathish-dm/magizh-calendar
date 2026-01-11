@@ -84,12 +84,7 @@ struct AngamBentoCard: View {
 struct SunTimeBentoCard: View {
     let sunrise: Date
     let sunset: Date
-
-    private var timeFormatter: DateFormatter {
-        let f = DateFormatter()
-        f.dateFormat = "h:mm a"
-        return f
-    }
+    let locationTimezone: TimeZone
 
     private var dayLength: String {
         let interval = sunset.timeIntervalSince(sunrise)
@@ -111,12 +106,12 @@ struct SunTimeBentoCard: View {
             }
 
             // Sunrise time
-            Text(timeFormatter.string(from: sunrise))
+            Text(TimezoneConversionService.shared.formatTime(sunrise, locationTimezone: locationTimezone))
                 .font(.subheadline)
                 .fontWeight(.bold)
 
             // Sunset time
-            Text(timeFormatter.string(from: sunset))
+            Text(TimezoneConversionService.shared.formatTime(sunset, locationTimezone: locationTimezone))
                 .font(.caption)
                 .foregroundStyle(.secondary)
 

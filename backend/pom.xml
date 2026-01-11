@@ -87,11 +87,18 @@
         </dependency>
     </dependencies>
 
-    <!-- JitPack repository for Swiss Ephemeris -->
+    <!-- Repositories - Maven Central first, then JitPack for Swiss Ephemeris -->
     <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 

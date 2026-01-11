@@ -1,0 +1,14 @@
+target/
+*.log
+*.iml
+.idea/
+.git/
+.gitignore
+README.md
+PROGRESS.md
+CLAUDE.md
+Makefile
+docker-compose.yml
+railway.toml
+nixpacks.toml
+fly.toml

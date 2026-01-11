@@ -72,5 +72,8 @@ Thumbs.db
 application-local.yml
 application-local.properties
 
+# Environment secrets
+.env
+
 # Swiss Ephemeris data (large files)
 # src/main/resources/ephe/*.se1

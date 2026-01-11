@@ -22,9 +22,9 @@ enum AppEnvironment: String, CaseIterable, Sendable {
         case .development:
             return "http://localhost:8080"
         case .staging:
-            return "https://staging-api.magizh.com"
+            return "https://staging.api.magizh.me"
         case .production:
-            return "https://api.magizh.com"
+            return "https://api.magizh.me"
         }
     }
 

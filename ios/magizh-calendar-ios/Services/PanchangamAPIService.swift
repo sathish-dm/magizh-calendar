@@ -42,7 +42,7 @@ private enum ServiceConfig: Sendable {
     static nonisolated let baseURL = "http://localhost:8080"
     static nonisolated let timeout: TimeInterval = 30
     #else
-    static nonisolated let baseURL = "https://api.magizh.com"
+    static nonisolated let baseURL = "https://api.magizh.me"
     static nonisolated let timeout: TimeInterval = 15
     #endif
 

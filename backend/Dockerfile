@@ -34,4 +34,6 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD wget -qO- http://localhost:8080/api/panchangam/health || exit 1
 
 # Run with virtual threads enabled
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Use PORT env var for Fly.io compatibility
+ENV PORT=8080
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT} -jar app.jar"]

@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: magizh-calendar-api
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - API_SECURITY_ENABLED=true
+      - API_KEY_IOS=${API_KEY_IOS}
+      - API_KEY_WEB=${API_KEY_WEB}
+      - API_KEY_DEV=${API_KEY_DEV:-dev-key-for-local-testing}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-*}
+      - RATE_LIMIT_ENABLED=true
+      - RATE_LIMIT_RPM=60
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/panchangam/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Cloudflare Tunnel (optional - for public access without port forwarding)
+  # Uncomment if you want to use Cloudflare Tunnel
+  # tunnel:
+  #   image: cloudflare/cloudflared:latest
+  #   container_name: magizh-tunnel
+  #   command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - api

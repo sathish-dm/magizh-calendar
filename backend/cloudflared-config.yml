@@ -1,0 +1,27 @@
+# Cloudflare Tunnel Configuration for Magizh Calendar API
+#
+# Setup Instructions:
+# 1. Copy this file to your Debian server: ~/.cloudflared/config.yml
+# 2. Replace TUNNEL_ID with your actual tunnel ID
+# 3. Replace YOUR_USER with your Linux username
+#
+# Commands to run on server:
+#   cloudflared tunnel login
+#   cloudflared tunnel create magizh-api
+#   cloudflared tunnel route dns magizh-api api.magizh.me
+#   sudo cloudflared service install
+#   sudo systemctl enable cloudflared
+#   sudo systemctl start cloudflared
+
+tunnel: magizh-api
+credentials-file: /home/YOUR_USER/.cloudflared/TUNNEL_ID.json
+
+ingress:
+  # API endpoint
+  - hostname: api.magizh.me
+    service: http://localhost:8080
+    originRequest:
+      noTLSVerify: true
+
+  # Catch-all (required)
+  - service: http_status:404

@@ -553,43 +553,79 @@ struct DailyView: View {
                         }
                     }
 
-                    // Display ALL Nalla Neram periods
-                    VStack(spacing: Spacing.md) {
-                        ForEach(Array(data.nallaNeram.enumerated()), id: \.element.id) { index, nallaNeram in
-                            timingRow(
-                                type: .nallaNeram,
-                                timeRange: nallaNeram,
-                                badgeText: index == 0
-                                    ? localization.string(.morning)
-                                    : localization.string(.afternoon),
-                                isPrimary: true
-                            )
-                        }
-
-                        // Display Gowri Nalla Neram if available
-                        if !data.gowriNallaNeram.isEmpty {
-                            Divider()
-                                .padding(.vertical, Spacing.xs)
-
+                    // Nalla Neram - Compact horizontal layout
+                    VStack(alignment: .leading, spacing: Spacing.md) {
+                        // Nalla Neram section - clean two-column layout
+                        VStack(alignment: .leading, spacing: Spacing.sm) {
                             HStack(spacing: Spacing.xs) {
-                                Image(systemName: "star.circle.fill")
+                                Image(systemName: "star.fill")
                                     .font(.caption)
                                     .foregroundStyle(.green)
-                                Text("Gowri Nalla Neram")
-                                    .font(.caption)
+                                Text(localization.string(.nallaNeram))
+                                    .font(.subheadline)
                                     .fontWeight(.semibold)
-                                    .foregroundStyle(.secondary)
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
 
-                            ForEach(data.gowriNallaNeram) { gowriTime in
-                                timingRow(
-                                    type: .gowriNallaNeram,
-                                    timeRange: gowriTime,
-                                    badgeText: localization.string(.bestTime),
-                                    isPrimary: false
-                                )
+                            // Two columns for morning and afternoon
+                            HStack(spacing: Spacing.md) {
+                                ForEach(Array(data.nallaNeram.enumerated()), id: \.element.id) { index, nallaNeram in
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(index == 0 ? localization.string(.morning) : localization.string(.afternoon))
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                        Text(nallaNeram.formatted)
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .foregroundStyle(.green)
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
                             }
+                        }
+                        .padding(Spacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            RoundedRectangle(cornerRadius: CornerRadius.lg, style: .continuous)
+                                .fill(Color.green.opacity(0.08))
+                        )
+
+                        // Gowri Nalla Neram section
+                        if !data.gowriNallaNeram.isEmpty {
+                            VStack(alignment: .leading, spacing: Spacing.sm) {
+                                HStack(spacing: Spacing.xs) {
+                                    Image(systemName: "sparkle")
+                                        .font(.caption)
+                                        .foregroundStyle(.green.opacity(0.8))
+                                    Text("Gowri Nalla Neram")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+
+                                    Spacer()
+
+                                    Text("\(data.gowriNallaNeram.count) periods")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                // Compact time grid
+                                LazyVGrid(columns: [
+                                    GridItem(.flexible(), spacing: Spacing.sm),
+                                    GridItem(.flexible(), spacing: Spacing.sm)
+                                ], spacing: Spacing.sm) {
+                                    ForEach(data.gowriNallaNeram) { gowriTime in
+                                        compactTimePill(
+                                            time: gowriTime.formatted,
+                                            isActive: gowriTime.isCurrentlyActive
+                                        )
+                                    }
+                                }
+                            }
+                            .padding(Spacing.md)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(
+                                RoundedRectangle(cornerRadius: CornerRadius.lg, style: .continuous)
+                                    .fill(.ultraThinMaterial)
+                            )
                         }
                     }
                 }
@@ -908,6 +944,111 @@ struct DailyView: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, Spacing.lg)
         }
+    }
+
+    // MARK: - Compact Time Pills
+
+    /// Time pill with label badge (for Nalla Neram)
+    private func timePill(time: String, label: String, color: Color, isActive: Bool) -> some View {
+        HStack(spacing: Spacing.sm) {
+            Text(time)
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundStyle(color)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+
+            Text(label)
+                .font(.caption2)
+                .fontWeight(.medium)
+                .foregroundStyle(.white)
+                .padding(.horizontal, Spacing.sm)
+                .padding(.vertical, 2)
+                .background(color.gradient)
+                .clipShape(Capsule())
+        }
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, Spacing.sm)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: CornerRadius.md, style: .continuous)
+                .fill(color.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: CornerRadius.md, style: .continuous)
+                        .stroke(isActive ? color : .clear, lineWidth: 2)
+                )
+        )
+    }
+
+    /// Compact time pill for Gowri Nalla Neram grid
+    private func compactTimePill(time: String, isActive: Bool) -> some View {
+        HStack(spacing: Spacing.xs) {
+            Circle()
+                .fill(Color.green)
+                .frame(width: 6, height: 6)
+
+            Text(time)
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundStyle(isActive ? .green : .primary)
+        }
+        .padding(.horizontal, Spacing.sm)
+        .padding(.vertical, Spacing.sm)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: CornerRadius.sm, style: .continuous)
+                .fill(isActive ? Color.green.opacity(0.15) : Color.clear)
+        )
+    }
+}
+
+// MARK: - Flow Layout
+
+/// A layout that arranges views in a flowing horizontal manner, wrapping to new lines as needed
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let result = arrangeSubviews(proposal: proposal, subviews: subviews)
+        return result.size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let result = arrangeSubviews(proposal: proposal, subviews: subviews)
+
+        for (index, subview) in subviews.enumerated() {
+            subview.place(at: CGPoint(x: bounds.minX + result.positions[index].x,
+                                      y: bounds.minY + result.positions[index].y),
+                         proposal: .unspecified)
+        }
+    }
+
+    private func arrangeSubviews(proposal: ProposedViewSize, subviews: Subviews) -> (size: CGSize, positions: [CGPoint]) {
+        let maxWidth = proposal.width ?? .infinity
+        var positions: [CGPoint] = []
+        var currentX: CGFloat = 0
+        var currentY: CGFloat = 0
+        var lineHeight: CGFloat = 0
+        var totalHeight: CGFloat = 0
+        var totalWidth: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+
+            if currentX + size.width > maxWidth && currentX > 0 {
+                currentX = 0
+                currentY += lineHeight + spacing
+                lineHeight = 0
+            }
+
+            positions.append(CGPoint(x: currentX, y: currentY))
+            lineHeight = max(lineHeight, size.height)
+            currentX += size.width + spacing
+            totalWidth = max(totalWidth, currentX - spacing)
+            totalHeight = currentY + lineHeight
+        }
+
+        return (CGSize(width: totalWidth, height: totalHeight), positions)
     }
 }
 

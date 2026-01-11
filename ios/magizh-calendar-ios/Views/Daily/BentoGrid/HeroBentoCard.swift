@@ -11,11 +11,13 @@ struct HeroBentoCard: View {
 
     var body: some View {
         VStack(spacing: Spacing.sm) {
-            // Top row: Location + Food Status + Settings
+            // Top row: Location + Food Status (only if restrictions) + Settings
             HStack(alignment: .center, spacing: Spacing.sm) {
                 locationBadge
                 Spacer()
-                foodStatusBadge
+                if effectiveFoodStatus.type != .regular {
+                    foodStatusBadge
+                }
                 settingsButton
             }
             .frame(height: 32)
@@ -36,10 +38,11 @@ struct HeroBentoCard: View {
             // Tamil date badge
             Text("\(data.tamilDate.localizedFormatted) \u{2022} \(data.vaaram.localizedName)")
                 .font(.caption)
-                .foregroundStyle(.white.opacity(0.9))
+                .fontWeight(.medium)
+                .foregroundStyle(.white)
                 .padding(.horizontal, Spacing.md)
                 .padding(.vertical, Spacing.xs)
-                .background(.white.opacity(0.2))
+                .background(.black.opacity(0.25))
                 .clipShape(Capsule())
         }
         .padding(Spacing.md)
@@ -86,20 +89,19 @@ struct HeroBentoCard: View {
     }
 
     private var foodStatusBadge: some View {
-        let (effectiveType, _) = effectiveFoodStatus
-        let color = effectiveType == .regular ? Color.green : data.foodStatus.color
+        let effectiveType = effectiveFoodStatus.type
 
         return HStack(spacing: Spacing.xs) {
             Image(systemName: effectiveType.iconName)
                 .font(.caption2)
-            Text(effectiveType == .regular ? "OK" : effectiveType.shortLabel)
+            Text(effectiveType.shortLabel)
                 .font(.caption)
                 .fontWeight(.semibold)
         }
         .foregroundStyle(.white)
         .padding(.horizontal, Spacing.sm)
         .frame(height: 28)
-        .background(color.gradient)
+        .background(data.foodStatus.color.gradient)
         .clipShape(Capsule())
     }
 

@@ -21,8 +21,6 @@ struct DailyView: View {
 
             ScrollView {
                 VStack(spacing: Spacing.lg) {
-                    headerSection
-
                     if viewModel.isLoading {
                         loadingView
                     } else if let error = viewModel.errorMessage {
@@ -163,11 +161,8 @@ struct DailyView: View {
 
     @ViewBuilder
     private func contentSection(data: PanchangamData) -> some View {
-        foodStatusCard(data: data)
-        timingsSection(data: data)
-        panchangamSection(data: data)
-        currentStatusCard(data: data)
-        verificationBadge
+        // Use new Bento Grid layout
+        BentoDailyView(data: data, location: viewModel.currentLocation, showingSettings: $showingSettings)
     }
 
     // MARK: - Food Status Card

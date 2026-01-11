@@ -103,8 +103,19 @@ extension PanchangamAPIResponse {
             return nil
         }
 
-        let isoFormatter = ISO8601DateFormatter()
-        isoFormatter.formatOptions = [.withInternetDateTime, .withColonSeparatorInTimeZone]
+        // Helper to parse ISO8601 dates with or without fractional seconds
+        func parseISO8601(_ string: String) -> Date? {
+            // Try with fractional seconds first
+            let withFractional = ISO8601DateFormatter()
+            withFractional.formatOptions = [.withInternetDateTime, .withColonSeparatorInTimeZone, .withFractionalSeconds]
+            if let date = withFractional.date(from: string) {
+                return date
+            }
+            // Fallback to without fractional seconds
+            let withoutFractional = ISO8601DateFormatter()
+            withoutFractional.formatOptions = [.withInternetDateTime, .withColonSeparatorInTimeZone]
+            return withoutFractional.date(from: string)
+        }
 
         // Parse Tamil Date
         let tamilDateModel = TamilDate(
@@ -115,14 +126,14 @@ extension PanchangamAPIResponse {
         )
 
         // Parse Nakshatram
-        let nakshatramEndTime = isoFormatter.date(from: nakshatram.endTime) ?? gregorianDate
+        let nakshatramEndTime = parseISO8601( nakshatram.endTime) ?? gregorianDate
         let nakshatramModel = Nakshatram(
             name: parseNakshatramName(nakshatram.name),
             endTime: nakshatramEndTime
         )
 
         // Parse Thithi
-        let thithiEndTime = isoFormatter.date(from: thithi.endTime) ?? gregorianDate
+        let thithiEndTime = parseISO8601( thithi.endTime) ?? gregorianDate
         let thithiModel = Thithi(
             name: parseThithiName(thithi.name),
             paksha: thithi.paksha == "SHUKLA" ? .shukla : .krishna,
@@ -130,8 +141,8 @@ extension PanchangamAPIResponse {
         )
 
         // Parse Yogam
-        let yogamStartTime = isoFormatter.date(from: yogam.startTime) ?? gregorianDate
-        let yogamEndTime = isoFormatter.date(from: yogam.endTime) ?? gregorianDate
+        let yogamStartTime = parseISO8601( yogam.startTime) ?? gregorianDate
+        let yogamEndTime = parseISO8601( yogam.endTime) ?? gregorianDate
         let yogamModel = Yogam(
             name: parseYogamName(yogam.name),
             type: parseYogamType(yogam.type),
@@ -140,26 +151,26 @@ extension PanchangamAPIResponse {
         )
 
         // Parse Karanam
-        let karanamEndTime = isoFormatter.date(from: karanam.endTime) ?? gregorianDate
+        let karanamEndTime = parseISO8601( karanam.endTime) ?? gregorianDate
         let karanamModel = Karanam(
             name: parseKaranamName(karanam.name),
             endTime: karanamEndTime
         )
 
         // Parse Timings
-        let sunrise = isoFormatter.date(from: timings.sunrise) ?? gregorianDate
-        let sunset = isoFormatter.date(from: timings.sunset) ?? gregorianDate
+        let sunrise = parseISO8601( timings.sunrise) ?? gregorianDate
+        let sunset = parseISO8601( timings.sunset) ?? gregorianDate
 
         let nallaNeramRanges = timings.nallaNeram.compactMap { range -> TimeRange? in
-            guard let start = isoFormatter.date(from: range.startTime),
-                  let end = isoFormatter.date(from: range.endTime) else { return nil }
+            guard let start = parseISO8601( range.startTime),
+                  let end = parseISO8601( range.endTime) else { return nil }
             return TimeRange(startTime: start, endTime: end, type: .nallaNeram)
         }
 
-        guard let rahuStart = isoFormatter.date(from: timings.rahukaalam.startTime),
-              let rahuEnd = isoFormatter.date(from: timings.rahukaalam.endTime),
-              let yamaStart = isoFormatter.date(from: timings.yamagandam.startTime),
-              let yamaEnd = isoFormatter.date(from: timings.yamagandam.endTime) else {
+        guard let rahuStart = parseISO8601( timings.rahukaalam.startTime),
+              let rahuEnd = parseISO8601( timings.rahukaalam.endTime),
+              let yamaStart = parseISO8601( timings.yamagandam.startTime),
+              let yamaEnd = parseISO8601( timings.yamagandam.endTime) else {
             return nil
         }
 
@@ -168,8 +179,8 @@ extension PanchangamAPIResponse {
 
         var kuligaiRange: TimeRange?
         if let kuligai = timings.kuligai,
-           let kuligaiStart = isoFormatter.date(from: kuligai.startTime),
-           let kuligaiEnd = isoFormatter.date(from: kuligai.endTime) {
+           let kuligaiStart = parseISO8601( kuligai.startTime),
+           let kuligaiEnd = parseISO8601( kuligai.endTime) {
             kuligaiRange = TimeRange(startTime: kuligaiStart, endTime: kuligaiEnd, type: .kuligai)
         }
 
@@ -177,8 +188,8 @@ extension PanchangamAPIResponse {
         var gowriNallaNeramRanges: [TimeRange] = []
         if let gowriRanges = timings.gowriNallaNeram {
             gowriNallaNeramRanges = gowriRanges.compactMap { range -> TimeRange? in
-                guard let start = isoFormatter.date(from: range.startTime),
-                      let end = isoFormatter.date(from: range.endTime) else { return nil }
+                guard let start = parseISO8601( range.startTime),
+                      let end = parseISO8601( range.endTime) else { return nil }
                 return TimeRange(startTime: start, endTime: end, type: .gowriNallaNeram)
             }
         }

@@ -71,7 +71,9 @@ struct LocationSearchView: View {
             searchService.search(query: newValue)
         }
         .navigationTitle(mode.title)
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {

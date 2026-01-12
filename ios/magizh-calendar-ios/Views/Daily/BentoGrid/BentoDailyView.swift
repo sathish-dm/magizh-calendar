@@ -5,6 +5,7 @@ import Combine
 struct BentoDailyView: View {
     let data: PanchangamData
     let location: Location
+    @Binding var selectedDate: Date
     @Binding var showingSettings: Bool
     @ObservedObject var settings = SettingsService.shared
     @ObservedObject var localization = LocalizationService.shared
@@ -23,7 +24,7 @@ struct BentoDailyView: View {
     var body: some View {
         VStack(spacing: Spacing.md) {
             // Row 1: Hero Card (full width)
-            HeroBentoCard(data: data, location: location, showingSettings: $showingSettings)
+            HeroBentoCard(data: data, location: location, selectedDate: $selectedDate, showingSettings: $showingSettings)
 
             // Row 2: Nalla Neram + Avoid Times (side by side)
             HStack(spacing: Spacing.md) {

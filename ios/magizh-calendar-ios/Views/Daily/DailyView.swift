@@ -162,7 +162,7 @@ struct DailyView: View {
     @ViewBuilder
     private func contentSection(data: PanchangamData) -> some View {
         // Use new Bento Grid layout
-        BentoDailyView(data: data, location: viewModel.currentLocation, showingSettings: $showingSettings)
+        BentoDailyView(data: data, location: viewModel.currentLocation, selectedDate: $viewModel.selectedDate, showingSettings: $showingSettings)
     }
 
     // MARK: - Food Status Card

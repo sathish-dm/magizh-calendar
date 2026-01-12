@@ -32,9 +32,9 @@
 			path = "magizh-calendar-ios";
 			sourceTree = "<group>";
 		};
-		C1TEST0032F08B00000000003 /* UnitTests */ = {
+		C1TEST0032F08B00000000003 /* Tests/UnitTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Tests/UnitTests";
+			path = Tests/UnitTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -61,7 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				B88BF3CA2F08A06F0024DA83 /* magizh-calendar-ios */,
-				C1TEST0032F08B00000000003 /* UnitTests */,
+				C1TEST0032F08B00000000003 /* Tests/UnitTests */,
 				B88BF3C92F08A06F0024DA83 /* Products */,
 				B8AEFB022F08A3CA00763059 /* readme.md */,
 			);
@@ -115,7 +115,7 @@
 				C1TEST0092F08B00000000009 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				C1TEST0032F08B00000000003 /* UnitTests */,
+				C1TEST0032F08B00000000003 /* Tests/UnitTests */,
 			);
 			name = "magizh-calendar-iosTests";
 			packageProductDependencies = (
@@ -328,6 +328,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3J6JCM859U;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
@@ -370,6 +371,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3J6JCM859U;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;

@@ -4,20 +4,23 @@ import SwiftUI
 struct HeroBentoCard: View {
     let data: PanchangamData
     let location: Location
+    @Binding var selectedDate: Date
     @Binding var showingSettings: Bool
     @ObservedObject var settings = SettingsService.shared
     @ObservedObject var localization = LocalizationService.shared
     @State private var isFloating = false
+    @State private var showingDatePicker = false
 
     var body: some View {
         VStack(spacing: Spacing.sm) {
-            // Top row: Location + Food Status (only if restrictions) + Settings
+            // Top row: Location + Food Status (only if restrictions) + Calendar + Settings
             HStack(alignment: .center, spacing: Spacing.sm) {
                 locationBadge
                 Spacer()
                 if effectiveFoodStatus.type != .regular {
                     foodStatusBadge
                 }
+                calendarButton
                 settingsButton
             }
             .frame(height: 32)
@@ -55,6 +58,23 @@ struct HeroBentoCard: View {
             withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
                 isFloating = true
             }
+        }
+        .sheet(isPresented: $showingDatePicker) {
+            DatePickerSheet(selectedDate: $selectedDate, isPresented: $showingDatePicker)
+        }
+    }
+
+    private var calendarButton: some View {
+        Button {
+            showingDatePicker = true
+        } label: {
+            Image(systemName: "calendar")
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.9))
+                .frame(width: 28, height: 28)
+                .background(.ultraThinMaterial)
+                .clipShape(Circle())
+                .environment(\.colorScheme, .dark)
         }
     }
 
@@ -134,5 +154,59 @@ private extension FoodStatusType {
         case .strictFast: return "Fast"
         case .multipleObservances: return "Special"
         }
+    }
+}
+
+// MARK: - Date Picker Sheet
+
+struct DatePickerSheet: View {
+    @Binding var selectedDate: Date
+    @Binding var isPresented: Bool
+    @State private var tempDate: Date = Date()
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                DatePicker(
+                    "Select Date",
+                    selection: $tempDate,
+                    displayedComponents: .date
+                )
+                .datePickerStyle(.graphical)
+                .padding()
+
+                // Today button
+                Button {
+                    tempDate = Date()
+                } label: {
+                    Text("Go to Today")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                .padding(.bottom)
+            }
+            .navigationTitle("Select Date")
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        isPresented = false
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        selectedDate = tempDate
+                        isPresented = false
+                    }
+                    .fontWeight(.semibold)
+                }
+            }
+        }
+        .onAppear {
+            tempDate = selectedDate
+        }
+        .presentationDetents([.medium])
     }
 }

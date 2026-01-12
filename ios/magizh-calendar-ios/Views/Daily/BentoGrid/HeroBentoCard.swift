@@ -38,15 +38,37 @@ struct HeroBentoCard: View {
                 .fontWeight(.medium)
                 .foregroundStyle(.white.opacity(0.9))
 
-            // Tamil date badge
-            Text("\(data.tamilDate.localizedFormatted) \u{2022} \(data.vaaram.localizedName)")
-                .font(.caption)
-                .fontWeight(.medium)
-                .foregroundStyle(.white)
-                .padding(.horizontal, Spacing.md)
-                .padding(.vertical, Spacing.xs)
-                .background(.black.opacity(0.25))
-                .clipShape(Capsule())
+            // Tamil date badge + Today button
+            HStack(spacing: Spacing.sm) {
+                Text("\(data.tamilDate.localizedFormatted) \u{2022} \(data.vaaram.localizedName)")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, Spacing.md)
+                    .padding(.vertical, Spacing.xs)
+                    .background(.black.opacity(0.25))
+                    .clipShape(Capsule())
+
+                // Show "Today" button when not viewing today
+                if !Calendar.current.isDateInToday(selectedDate) {
+                    Button {
+                        selectedDate = Date()
+                    } label: {
+                        HStack(spacing: Spacing.xs) {
+                            Image(systemName: "arrow.uturn.backward")
+                                .font(.caption2)
+                            Text("Today")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, Spacing.md)
+                        .padding(.vertical, Spacing.xs)
+                        .background(.white.opacity(0.3))
+                        .clipShape(Capsule())
+                    }
+                }
+            }
         }
         .padding(Spacing.md)
         .frame(maxWidth: .infinity)
